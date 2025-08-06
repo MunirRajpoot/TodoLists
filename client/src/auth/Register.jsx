@@ -2,15 +2,38 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
 
-const Register = ({ onRegister, isLoading, error }) => {
+const Register = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onRegister({ email, password, name });
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      navigate('/login');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const additionalFields = [
@@ -20,8 +43,8 @@ const Register = ({ onRegister, isLoading, error }) => {
       label: 'Full Name',
       value: name,
       onChange: (e) => setName(e.target.value),
-      required: true
-    }
+      required: true,
+    },
   ];
 
   return (
@@ -33,7 +56,6 @@ const Register = ({ onRegister, isLoading, error }) => {
       setEmail={setEmail}
       password={password}
       setPassword={setPassword}
-      
       submitButtonText="Sign Up"
       footerText="Already have an account?"
       footerLinkText="Sign In"
