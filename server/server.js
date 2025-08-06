@@ -14,12 +14,19 @@ app.use(express.json());
 connectDB();
 
 // Routes
+app.get('/', (req, res) => {
+    res.send('Server is running!');
+});
 app.use('/api', require('./routes/authRoutes'));
 
 // Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+const PORT = process.env.PORT || 5001
+app.listen(PORT, (err) => {
+    if (err) {
+        console.error('❌ Server failed to start:', err);
+    } else {
+        console.log(`✅ Server is running on http://localhost:${PORT}`);
+    }
 });
 
 module.exports = app; // Export the app for testing purposes
