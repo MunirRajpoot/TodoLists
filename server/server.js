@@ -19,8 +19,10 @@ app.get('/', (req, res) => {
 });
 app.use('/api', require('./routes/authRoutes'));
 
+app.use('/api/todos', require('./routes/todoRoutes'));
+
 // Start the server
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT || 5000
 app.listen(PORT, (err) => {
     if (err) {
         console.error('❌ Server failed to start:', err);

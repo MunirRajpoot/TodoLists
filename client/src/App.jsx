@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import Dashboard from './components/Dashboard';
+import TodoApp from './components/TodoApp';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -18,6 +19,8 @@ function App() {
           <Route path="/login" element={<LoginWrapper />} />
           <Route path="/register" element={<RegisterWrapper />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/todos" element={<PrivateRoute><TodoApp /></PrivateRoute>} />
+          <Route path="/" element={<PrivateRoute><Navigate to="/todos" /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
@@ -27,11 +30,23 @@ function App() {
 
 const LoginWrapper = () => {
   const { login, isLoading, error } = useAuth();
+  const { user } = useAuth();
+  
+  if (user) {
+    return <Navigate to="/todos" />;
+  }
+  
   return <Login onLogin={login} isLoading={isLoading} error={error} />;
 };
 
 const RegisterWrapper = () => {
   const { register, isLoading, error } = useAuth();
+  const { user } = useAuth();
+  
+  if (user) {
+    return <Navigate to="/todos" />;
+  }
+  
   return <Register onRegister={register} isLoading={isLoading} error={error} />;
 };
 
