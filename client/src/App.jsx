@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Login from './auth/Login';
-import Register from './auth/Register';
-import Dashboard from './components/Dashboard';
-import TodoApp from './components/TodoApp';
+import LoginPage from './pages/Login.jsx';
+import SignupPage from './pages/Signup.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -16,11 +16,10 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<LoginWrapper />} />
-          <Route path="/register" element={<RegisterWrapper />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/todos" element={<PrivateRoute><TodoApp /></PrivateRoute>} />
-          <Route path="/" element={<PrivateRoute><Navigate to="/todos" /></PrivateRoute>} />
+          <Route path="/" element={<PrivateRoute><Navigate to="/dashboard" /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
@@ -33,10 +32,10 @@ const LoginWrapper = () => {
   const { user } = useAuth();
   
   if (user) {
-    return <Navigate to="/todos" />;
+    return <Navigate to="/dashboard" />;
   }
   
-  return <Login onLogin={login} isLoading={isLoading} error={error} />;
+  return <LoginPage onLogin={login} isLoading={isLoading} error={error} />;
 };
 
 const RegisterWrapper = () => {
@@ -44,10 +43,10 @@ const RegisterWrapper = () => {
   const { user } = useAuth();
   
   if (user) {
-    return <Navigate to="/todos" />;
+    return <Navigate to="/dashboard" />;
   }
   
-  return <Register onRegister={register} isLoading={isLoading} error={error} />;
+  return <SignupPage onRegister={register} isLoading={isLoading} error={error} />;
 };
 
 export default App;
