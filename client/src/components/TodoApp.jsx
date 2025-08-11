@@ -108,10 +108,7 @@ const TodoApp = () => {
   return (
     
       <Box sx={{ p: 4, maxWidth: 800, margin: '0 auto' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography variant="h4">Todo App</Typography>
-          <Button variant="outlined" onClick={logout}>Logout</Button>
-        </Box>
+        
 
         <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
