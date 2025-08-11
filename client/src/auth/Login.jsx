@@ -26,7 +26,7 @@ const Login = () => {
       submitButtonText="Sign In"
       footerText="Don't have an account?"
       footerLinkText="Sign Up"
-      footerLinkPath="/register"
+      footerLinkPath="/signup"
       isLoading={isLoading}
       error={error}
     />

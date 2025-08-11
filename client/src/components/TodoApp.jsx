@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  TextField, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  ListItemSecondaryAction, 
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
   IconButton,
   Paper,
   Tabs,
@@ -17,6 +17,7 @@ import {
   Checkbox
 } from '@mui/material';
 import { Delete, Edit, Check, Close } from '@mui/icons-material';
+
 
 // Date formatting function
 const formatDate = (date) => {
@@ -76,7 +77,7 @@ const TodoApp = () => {
   };
 
   const saveEdit = (id) => {
-    setTodos(todos.map(todo => 
+    setTodos(todos.map(todo =>
       todo.id === id ? { ...todo, text: editText } : todo
     ));
     setEditingId(null);
@@ -105,125 +106,127 @@ const TodoApp = () => {
   const completedTodos = todos.filter(todo => todo.completed);
 
   return (
-    <Box sx={{ p: 4, maxWidth: 800, margin: '0 auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Typography variant="h4">Todo App</Typography>
-        <Button variant="outlined" onClick={logout}>Logout</Button>
-      </Box>
-      
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-            placeholder="Add a new todo"
-            onKeyPress={(e) => e.key === 'Enter' && addTodo()}
-          />
-          <Button 
-            variant="contained" 
-            onClick={addTodo}
-            disabled={!newTodo.trim()}
-          >
-            Add
-          </Button>
+    
+      <Box sx={{ p: 4, maxWidth: 800, margin: '0 auto' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+          <Typography variant="h4">Todo App</Typography>
+          <Button variant="outlined" onClick={logout}>Logout</Button>
         </Box>
-      </Paper>
 
-      <Paper elevation={3}>
-        <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
-          <Tab label="Active Todos" />
-          <Tab label="Completed Todos" />
-        </Tabs>
-        
-        {tabValue === 0 && (
-          <Box sx={{ p: 2 }}>
-            {activeTodos.length === 0 ? (
-              <Typography sx={{ p: 2 }}>No active todos. Add one above!</Typography>
-            ) : (
-              <List>
-                {activeTodos.map(todo => (
-                  <ListItem key={todo.id}>
-                    <Checkbox
-                      checked={todo.completed}
-                      onChange={() => toggleComplete(todo.id)}
-                    />
-                    {editingId === todo.id ? (
-                      <Box sx={{ display: 'flex', flexGrow: 1, gap: 1 }}>
-                        <TextField
-                          fullWidth
-                          variant="standard"
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && saveEdit(todo.id)}
-                        />
-                        <IconButton onClick={() => saveEdit(todo.id)}>
-                          <Check color="primary" />
-                        </IconButton>
-                        <IconButton onClick={cancelEdit}>
-                          <Close color="error" />
-                        </IconButton>
-                      </Box>
-                    ) : (
-                      <>
-                        <ListItemText 
-                          primary={todo.text} 
-                          secondary={`Created: ${formatDate(todo.createdAt)}`}
-                        />
-                        <ListItemSecondaryAction>
-                          <IconButton onClick={() => startEditing(todo.id, todo.text)}>
-                            <Edit color="primary" />
-                          </IconButton>
-                          <IconButton onClick={() => deleteTodo(todo.id)}>
-                            <Delete color="error" />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </>
-                    )}
-                  </ListItem>
-                ))}
-              </List>
-            )}
+        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              placeholder="Add a new todo"
+              onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+            />
+            <Button
+              variant="contained"
+              onClick={addTodo}
+              disabled={!newTodo.trim()}
+            >
+              Add
+            </Button>
           </Box>
-        )}
-        
-        {tabValue === 1 && (
-          <Box sx={{ p: 2 }}>
-            {completedTodos.length === 0 ? (
-              <Typography sx={{ p: 2 }}>No completed todos yet.</Typography>
-            ) : (
-              <List>
-                {completedTodos.map(todo => (
-                  <ListItem key={todo.id}>
-                    <Checkbox
-                      checked={todo.completed}
-                      onChange={() => toggleComplete(todo.id)}
-                    />
-                    <ListItemText 
-                      primary={todo.text} 
-                      secondary={
+        </Paper>
+
+        <Paper elevation={3}>
+          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
+            <Tab label="Active Todos" />
+            <Tab label="Completed Todos" />
+          </Tabs>
+
+          {tabValue === 0 && (
+            <Box sx={{ p: 2 }}>
+              {activeTodos.length === 0 ? (
+                <Typography sx={{ p: 2 }}>No active todos. Add one above!</Typography>
+              ) : (
+                <List>
+                  {activeTodos.map(todo => (
+                    <ListItem key={todo.id}>
+                      <Checkbox
+                        checked={todo.completed}
+                        onChange={() => toggleComplete(todo.id)}
+                      />
+                      {editingId === todo.id ? (
+                        <Box sx={{ display: 'flex', flexGrow: 1, gap: 1 }}>
+                          <TextField
+                            fullWidth
+                            variant="standard"
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && saveEdit(todo.id)}
+                          />
+                          <IconButton onClick={() => saveEdit(todo.id)}>
+                            <Check color="primary" />
+                          </IconButton>
+                          <IconButton onClick={cancelEdit}>
+                            <Close color="error" />
+                          </IconButton>
+                        </Box>
+                      ) : (
                         <>
-                          <span>Created: {formatDate(todo.createdAt)}</span>
-                          <br />
-                          <span>Completed: {formatDate(todo.completedAt)}</span>
+                          <ListItemText
+                            primary={todo.text}
+                            secondary={`Created: ${formatDate(todo.createdAt)}`}
+                          />
+                          <ListItemSecondaryAction>
+                            <IconButton onClick={() => startEditing(todo.id, todo.text)}>
+                              <Edit color="primary" />
+                            </IconButton>
+                            <IconButton onClick={() => deleteTodo(todo.id)}>
+                              <Delete color="error" />
+                            </IconButton>
+                          </ListItemSecondaryAction>
                         </>
-                      }
-                      sx={{ textDecoration: 'line-through', color: 'text.secondary' }}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton onClick={() => deleteTodo(todo.id)}>
-                        <Delete color="error" />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-            )}
-          </Box>
-        )}
-      </Paper>
-    </Box>
+                      )}
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          )}
+
+          {tabValue === 1 && (
+            <Box sx={{ p: 2 }}>
+              {completedTodos.length === 0 ? (
+                <Typography sx={{ p: 2 }}>No completed todos yet.</Typography>
+              ) : (
+                <List>
+                  {completedTodos.map(todo => (
+                    <ListItem key={todo.id}>
+                      <Checkbox
+                        checked={todo.completed}
+                        onChange={() => toggleComplete(todo.id)}
+                      />
+                      <ListItemText
+                        primary={todo.text}
+                        secondary={
+                          <>
+                            <span>Created: {formatDate(todo.createdAt)}</span>
+                            <br />
+                            <span>Completed: {formatDate(todo.completedAt)}</span>
+                          </>
+                        }
+                        sx={{ textDecoration: 'line-through', color: 'text.secondary' }}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton onClick={() => deleteTodo(todo.id)}>
+                          <Delete color="error" />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          )}
+        </Paper>
+      </Box>
+
   );
 };
 
