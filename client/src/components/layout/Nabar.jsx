@@ -6,12 +6,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import AdbIcon from '@mui/icons-material/Adb';
+import { useAuth } from '../../context/AuthContext';
 
 function Navbar() {
-    const handleLogout = () => {
-        console.log('Logout clicked');
-        // Add your logout logic here
-    };
+    const { user, logout } = useAuth();
 
     return (
         <AppBar
@@ -46,7 +44,7 @@ function Navbar() {
                     <Button
                         color="inherit"
                         variant="outlined"
-                        onClick={handleLogout}
+                        onClick={logout}
                         sx={{
                             borderColor: 'white',
                             color: 'white',

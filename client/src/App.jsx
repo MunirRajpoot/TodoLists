@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CssBaseline } from "@mui/material";
+import Footer from './components/Footer.jsx';
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -23,7 +24,9 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/" element={<PrivateRoute><Navigate to="/dashboard" /></PrivateRoute>} />
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path='/footer' element={<PrivateRoute><Footer /></PrivateRoute>} />
+          <Route path="*" element={<div>Page Not Found</div>} />
+          
         </Routes>
       </Router>
 
