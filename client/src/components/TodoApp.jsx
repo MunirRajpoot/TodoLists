@@ -1,44 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import CustomCard from "./CustomCard.jsx";
+import CustomTable from "./CustomTable.jsx";
 import {
   Box,
   Typography,
-  Button,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
   Paper,
-  Tabs,
-  Tab,
-  Divider,
-  Checkbox
-} from '@mui/material';
-import { Delete, Edit, Check, Close } from '@mui/icons-material';
-
-
-// Date formatting function
-const formatDate = (date) => {
-  if (!date) return '';
-  const d = new Date(date);
-  return d.toLocaleString('en-US', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
+  Chip,
+  Button,
+  IconButton
+} from "@mui/material";
+import { Delete, Edit, CheckCircle, Padding } from "@mui/icons-material";
+import CustomButton from "./CustomButton.jsx";
 
 const TodoApp = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState('');
-  const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState('');
-  const [tabValue, setTabValue] = useState(0);
+  const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
     const savedTodos = localStorage.getItem(`todos_${user?.id}`);
@@ -53,177 +31,178 @@ const TodoApp = () => {
     }
   }, [todos, user]);
 
-  const addTodo = () => {
-    if (newTodo.trim()) {
-      const todo = {
-        id: Date.now(),
-        text: newTodo,
-        completed: false,
-        createdAt: new Date(),
-        completedAt: null
-      };
-      setTodos([...todos, todo]);
-      setNewTodo('');
-    }
-  };
+  const cards = [
+    { id: 1, title: "Total Tasks", count: todos.length },
+    { id: 2, title: "Pending Tasks", count: todos.filter(t => !t.completed).length },
+    { id: 3, title: "Completed Tasks", count: todos.filter(t => t.completed).length },
+  ];
 
   const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   const startEditing = (id, text) => {
-    setEditingId(id);
-    setEditText(text);
-  };
-
-  const saveEdit = (id) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, text: editText } : todo
-    ));
-    setEditingId(null);
-    setEditText('');
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditText('');
+    console.log("Edit Todo:", id, text);
+    // Implement your editing logic here
   };
 
   const toggleComplete = (id) => {
-    setTodos(todos.map(todo => {
-      if (todo.id === id) {
-        return {
-          ...todo,
-          completed: !todo.completed,
-          completedAt: !todo.completed ? new Date() : null
-        };
-      }
-      return todo;
-    }));
+    setTodos(
+      todos.map((todo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            completed: !todo.completed,
+            completedAt: !todo.completed ? new Date() : null,
+          };
+        }
+        return todo;
+      })
+    );
   };
 
-  const activeTodos = todos.filter(todo => !todo.completed);
-  const completedTodos = todos.filter(todo => todo.completed);
+  // Table Columns
+  // Table Columns
+  const columns = [
+    { field: "title", headerName: "Title" },
+    { field: "description", headerName: "Description" },
+    {
+      field: "status",
+      headerName: "Status",
+      renderCell: ({ value }) => (
+        <Chip
+          label={value}
+          sx={{
+            backgroundColor: value === "Completed" ? "#008A61" : "#AC6E10",
+            color: "white",
+            fontWeight: "bold",
+          }}
+        />
+      ),
+    },
+    {
+      field: "complete",
+      headerName: "Complete",
+      renderCell: ({ row }) =>
+        row.status !== "Completed" ? (
+          <Button
+            size="small"
+            color="success"
+            onClick={() => toggleComplete(row.id)}
+            startIcon={<CheckCircle />}
+          >
+            Complete
+          </Button>
+        ) : null,
+    },
+    {
+      field: "edit",
+      headerName: "Edit",
+      renderCell: ({ row }) => (
+        <IconButton
+          color="primary"
+          onClick={() => startEditing(row.id, row.title)}
+        >
+          <Edit />
+        </IconButton>
+      ),
+    },
+    {
+      field: "delete",
+      headerName: "Delete",
+      renderCell: ({ row }) => (
+        <IconButton color="error" onClick={() => deleteTodo(row.id)}>
+          <Delete />
+        </IconButton>
+      ),
+    },
+  ];
+
+
+  // Table Rows
+  // const rows = todos.map((todo) => ({
+  //   id: todo.id,
+  //   title: todo.text,
+  //   description: todo.description || "",
+  //   status: todo.completed ? "Completed" : "Pending",
+  // }));
+
+  // Table Rows (FOR TESTING ONLY - using dummy data)
+  const rows = [
+    { id: 1, title: "Buy groceries", description: "Milk, Eggs, Bread", status: "Pending" },
+    { id: 2, title: "Meeting with client", description: "Project update at 3PM", status: "Completed" },
+    { id: 3, title: "Workout", description: "Gym session at 6PM", status: "Pending" },
+  ];
+
 
   return (
-    
-      <Box sx={{ p: 4, maxWidth: 800, margin: '0 auto' }}>
-        
-
-        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
-              placeholder="Add a new todo"
-              onKeyPress={(e) => e.key === 'Enter' && addTodo()}
-            />
-            <Button
-              variant="contained"
-              onClick={addTodo}
-              disabled={!newTodo.trim()}
-            >
-              Add
-            </Button>
+    <Box sx={{ p: 4, maxWidth: 800, margin: "0 auto" }}>
+      {/* User Info */}
+      {user && (
+        <Paper
+          sx={{
+            p: 2,
+            mb: 3,
+            background: "linear-gradient(90deg, #1e3c72 0%, #2a5298 100%)",
+            borderRadius: 3,
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            color: "white",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          }}
+          elevation={3}
+        >
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
+              Welcome, {user.name}
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              {user.email}
+            </Typography>
           </Box>
         </Paper>
+      )}
 
-        <Paper elevation={3}>
-          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
-            <Tab label="Active Todos" />
-            <Tab label="Completed Todos" />
-          </Tabs>
-
-          {tabValue === 0 && (
-            <Box sx={{ p: 2 }}>
-              {activeTodos.length === 0 ? (
-                <Typography sx={{ p: 2 }}>No active todos. Add one above!</Typography>
-              ) : (
-                <List>
-                  {activeTodos.map(todo => (
-                    <ListItem key={todo.id}>
-                      <Checkbox
-                        checked={todo.completed}
-                        onChange={() => toggleComplete(todo.id)}
-                      />
-                      {editingId === todo.id ? (
-                        <Box sx={{ display: 'flex', flexGrow: 1, gap: 1 }}>
-                          <TextField
-                            fullWidth
-                            variant="standard"
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && saveEdit(todo.id)}
-                          />
-                          <IconButton onClick={() => saveEdit(todo.id)}>
-                            <Check color="primary" />
-                          </IconButton>
-                          <IconButton onClick={cancelEdit}>
-                            <Close color="error" />
-                          </IconButton>
-                        </Box>
-                      ) : (
-                        <>
-                          <ListItemText
-                            primary={todo.text}
-                            secondary={`Created: ${formatDate(todo.createdAt)}`}
-                          />
-                          <ListItemSecondaryAction>
-                            <IconButton onClick={() => startEditing(todo.id, todo.text)}>
-                              <Edit color="primary" />
-                            </IconButton>
-                            <IconButton onClick={() => deleteTodo(todo.id)}>
-                              <Delete color="error" />
-                            </IconButton>
-                          </ListItemSecondaryAction>
-                        </>
-                      )}
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-            </Box>
-          )}
-
-          {tabValue === 1 && (
-            <Box sx={{ p: 2 }}>
-              {completedTodos.length === 0 ? (
-                <Typography sx={{ p: 2 }}>No completed todos yet.</Typography>
-              ) : (
-                <List>
-                  {completedTodos.map(todo => (
-                    <ListItem key={todo.id}>
-                      <Checkbox
-                        checked={todo.completed}
-                        onChange={() => toggleComplete(todo.id)}
-                      />
-                      <ListItemText
-                        primary={todo.text}
-                        secondary={
-                          <>
-                            <span>Created: {formatDate(todo.createdAt)}</span>
-                            <br />
-                            <span>Completed: {formatDate(todo.completedAt)}</span>
-                          </>
-                        }
-                        sx={{ textDecoration: 'line-through', color: 'text.secondary' }}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton onClick={() => deleteTodo(todo.id)}>
-                          <Delete color="error" />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-            </Box>
-          )}
-        </Paper>
+      {/* Cards */}
+      <Box
+        sx={{
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(200px, 100%), 1fr))",
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        {cards.map((card, index) => (
+          <CustomCard
+            key={card.id}
+            title={card.title}
+            count={Number(card.count)}
+            gradient={
+              index === 0
+                ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                : index === 1
+                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
+                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
+            }
+            onClick={() => setSelectedCard(index)}
+            isActive={selectedCard === index}
+            activeStyles={{
+              boxShadow: "0 0 15px rgba(255,255,255,0.6)",
+            }}
+            inactiveStyles={{}}
+          />
+        ))}
       </Box>
 
+      {/* Add Task */}
+      <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
+        <CustomButton sx={{p:2}}>Add Tasks</CustomButton>
+      </Box>
+      {/* Table */}
+      <CustomTable columns={columns} rows={rows} minWidth={700} />
+    </Box>
   );
 };
 
