@@ -4,7 +4,9 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/Login.jsx';
 import SignupPage from './pages/Signup.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { CssBaseline } from "@mui/material";
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
@@ -14,6 +16,7 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
+      <CssBaseline />
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -23,30 +26,10 @@ function App() {
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </AuthProvider>
   );
 }
-
-const LoginWrapper = () => {
-  const { login, isLoading, error } = useAuth();
-  const { user } = useAuth();
-  
-  if (user) {
-    return <Navigate to="/dashboard" />;
-  }
-  
-  return <LoginPage onLogin={login} isLoading={isLoading} error={error} />;
-};
-
-const RegisterWrapper = () => {
-  const { register, isLoading, error } = useAuth();
-  const { user } = useAuth();
-  
-  if (user) {
-    return <Navigate to="/dashboard" />;
-  }
-  
-  return <SignupPage onRegister={register} isLoading={isLoading} error={error} />;
-};
 
 export default App;

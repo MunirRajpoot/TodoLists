@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthForm from './AuthForm';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthForm from "./AuthForm";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { register, isLoading, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-      await register({ name, email, password });
-      navigate('/login');
+    await register({ name, email, password });
+    navigate("/login");
   };
 
   const additionalFields = [
     {
-      id: 'name',
-      name: 'name',
-      label: 'Full Name',
+      id: "name",
+      name: "name",
+      label: "Name",
       value: name,
       onChange: (e) => setName(e.target.value),
       required: true,
@@ -29,16 +29,16 @@ const Register = () => {
 
   return (
     <AuthForm
-      title="Sign up"
+      title="Create an account"
       onSubmit={handleSubmit}
       additionalFields={additionalFields}
       email={email}
       setEmail={setEmail}
       password={password}
       setPassword={setPassword}
-      submitButtonText="Sign Up"
+      submitButtonText="Create Account"
       footerText="Already have an account?"
-      footerLinkText="Sign In"
+      footerLinkText="Log In"
       footerLinkPath="/login"
       isLoading={isLoading}
       error={error}

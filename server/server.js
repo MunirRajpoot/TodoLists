@@ -17,12 +17,12 @@ connectDB();
 app.get('/', (req, res) => {
     res.send('Server is running!');
 });
-app.use('/api', require('./routes/authRoutes'));
 
+app.use('/api/auth', require('./routes/authRoutes')); // ✅ Use /api/auth
 app.use('/api/todos', require('./routes/todoRoutes'));
 
 // Start the server
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, (err) => {
     if (err) {
         console.error('❌ Server failed to start:', err);
@@ -31,4 +31,4 @@ app.listen(PORT, (err) => {
     }
 });
 
-module.exports = app; // Export the app for testing purposes
+module.exports = app;
