@@ -1,132 +1,228 @@
-import { 
-  Box, 
-  TextField, 
-  Button, 
-  Typography, 
-  Link, 
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Link,
   Paper,
-  Avatar,
-  CircularProgress
-} from '@mui/material';
-import { LockOutlined } from '@mui/icons-material';
+  CircularProgress,
+  Divider,
+  IconButton,
+  InputAdornment
+} from "@mui/material";
+import GoogleIcon from "@mui/icons-material/Google";
+import AppleIcon from "@mui/icons-material/Apple";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useState } from "react";
 
-const AuthForm = ({ 
-  title, 
-  onSubmit, 
+const AuthForm = ({
+  title,
+  onSubmit,
   additionalFields = [],
-  email, 
-  setEmail, 
-  password, 
-  setPassword, 
-  
-  submitButtonText, 
-  footerText, 
-  footerLinkText, 
+  email,
+  setEmail,
+  password,
+  setPassword,
+  submitButtonText,
+  footerText,
+  footerLinkText,
   footerLinkPath,
   isLoading,
   error
 }) => {
+  
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5'
-      }}
-    >
-      <Paper
-        elevation={3}
+    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#1b1525" }}>
+      {/* Left Side - Image & Branding */}
+      <Box
         sx={{
-          padding: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          maxWidth: 400,
-          width: '100%'
+          flex: 1,
+          display: { xs: "none", md: "flex" },
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1501785888041-af3ef285b470')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderTopLeftRadius: "12px",
+          borderBottomLeftRadius: "12px",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlined />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          {title}
+        <Typography variant="h4" sx={{ color: "white", fontWeight: 500, px: 4, textAlign: "center" }}>
+          Capturing Moments, Creating Memories
         </Typography>
-        
-        {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
-            {error}
-          </Typography>
-        )}
+      </Box>
 
-        <Box 
-          component="form" 
-          onSubmit={onSubmit} 
-          sx={{ mt: 3, width: '100%' }}
+      {/* Right Side - Form */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          px: 3,
+          backgroundColor: "#221b2d",
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            maxWidth: 400,
+            width: "100%",
+            backgroundColor: "transparent",
+            color: "white",
+          }}
         >
-
-             {additionalFields.map((field) => (
-            <TextField
-              key={field.id}
-              margin="normal"
-              required={field.required || false}
-              fullWidth
-              name={field.name}
-              label={field.label}
-              type={field.type || 'text'}
-              id={field.id}
-              value={field.value}
-              onChange={field.onChange}
-            />
-          ))}
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          
-         
-          
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={isLoading}
-          >
-            {isLoading ? <CircularProgress size={24} /> : submitButtonText}
-          </Button>
-          
-          <Typography variant="body2" align="center">
-            {footerText}{' '}
-            <Link href={footerLinkPath} variant="body2">
-              {footerLinkText}
-            </Link>
+          <Typography component="h1" variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
+            {title}
           </Typography>
-        </Box>
-      </Paper>
+
+          {error && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              {error}
+            </Typography>
+          )}
+
+          <Box component="form" onSubmit={onSubmit} sx={{ width: "100%" }}>
+            {additionalFields.map((field) => (
+              <TextField
+                key={field.id}
+                margin="normal"
+                required={field.required || false}
+                fullWidth
+                name={field.name}
+                label={field.label}
+                type={field.type || "text"}
+                id={field.id}
+                value={field.value}
+                onChange={field.onChange}
+                variant="outlined"
+                InputLabelProps={{ style: { color: "#aaa" } }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    color: "white",
+                    "& fieldset": { borderColor: "#555" },
+                    "&:hover fieldset": { borderColor: "#888" },
+                  },
+                }}
+              />
+            ))}
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              InputLabelProps={{ style: { color: "#aaa" } }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": { borderColor: "#555" },
+                  "&:hover fieldset": { borderColor: "#888" },
+                },
+              }}
+            />
+
+            
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="password"
+              label="Password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputLabelProps={{ style: { color: "#aaa" } }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  color: "white",
+                  "& fieldset": { borderColor: "#555" },
+                  "&:hover fieldset": { borderColor: "#888" },
+                },
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(e) => e.preventDefault()}
+                      edge="end"
+                      sx={{ color: "#767070ff" }}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+              <input type="checkbox" id="terms" required />
+              <Typography variant="body2" sx={{ ml: 1 }}>
+                I agree to the{" "}
+                <Link href="#" sx={{ color: "#9c6cff" }}>
+                  Terms & Conditions
+                </Link>
+              </Typography>
+            </Box>
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{
+                mt: 3,
+                mb: 2,
+                bgcolor: "#9c6cff",
+                "&:hover": { bgcolor: "#8356d4" },
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? <CircularProgress size={24} /> : submitButtonText}
+            </Button>
+
+            <Divider sx={{ my: 2, bgcolor: "#555" }} />
+
+            {/* Social Buttons */}
+            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+              <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<GoogleIcon />}
+                sx={{ color: "white", borderColor: "#555" }}
+              >
+                Google
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<AppleIcon />}
+                sx={{ color: "white", borderColor: "#555" }}
+              >
+                Apple
+              </Button>
+            </Box>
+
+            <Typography variant="body2" align="center">
+              {footerText}{" "}
+              <Link href={footerLinkPath} sx={{ color: "#9c6cff" }}>
+                {footerLinkText}
+              </Link>
+            </Typography>
+          </Box>
+        </Paper>
+      </Box>
     </Box>
   );
 };
