@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import CustomCard from "./CustomCard.jsx";
 import CustomTable from "./CustomTable.jsx";
+import CustomModal from "./CustomModal.jsx";
+import CustomButton from "./CustomButton.jsx";
 import {
   Box,
   Typography,
@@ -10,14 +12,19 @@ import {
   Button,
   IconButton
 } from "@mui/material";
-import { Delete, Edit, CheckCircle, Padding } from "@mui/icons-material";
-import CustomButton from "./CustomButton.jsx";
+import { Delete, Edit, CheckCircle } from "@mui/icons-material";
 
 const TodoApp = () => {
   const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [todoTitle, setTodoTitle] = useState("");
+  const [todoDescription, setTodoDescription] = useState("");
   const [todos, setTodos] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [editTodoId, setEditTodoId] = useState(null);
 
+  // Load todos from localStorage
   useEffect(() => {
     const savedTodos = localStorage.getItem(`todos_${user?.id}`);
     if (savedTodos) {
@@ -25,43 +32,83 @@ const TodoApp = () => {
     }
   }, [user]);
 
+  // Save todos to localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem(`todos_${user.id}`, JSON.stringify(todos));
     }
   }, [todos, user]);
 
+  // Cards summary
   const cards = [
     { id: 1, title: "Total Tasks", count: todos.length },
     { id: 2, title: "Pending Tasks", count: todos.filter(t => !t.completed).length },
     { id: 3, title: "Completed Tasks", count: todos.filter(t => t.completed).length },
   ];
 
+  // Add Todo
+  const handleSubmit = () => {
+    setTodos([
+      ...todos,
+      {
+        id: Date.now(),
+        title: todoTitle,
+        description: todoDescription,
+        completed: false,
+        completedAt: null
+      }
+    ]);
+    setTodoTitle("");
+    setTodoDescription("");
+    setOpen(false);
+  };
+
+  // Delete Todo
   const deleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  const startEditing = (id, text) => {
-    console.log("Edit Todo:", id, text);
-    // Implement your editing logic here
-  };
-
+  // Toggle Complete
   const toggleComplete = (id) => {
     setTodos(
-      todos.map((todo) => {
-        if (todo.id === id) {
-          return {
-            ...todo,
-            completed: !todo.completed,
-            completedAt: !todo.completed ? new Date() : null,
-          };
-        }
-        return todo;
-      })
+      todos.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              completed: !todo.completed,
+              completedAt: !todo.completed ? new Date() : null,
+            }
+          : todo
+      )
     );
   };
 
-  // Table Columns
+  // Start Editing
+  const startEditing = (id) => {
+    const todo = todos.find((t) => t.id === id);
+    if (todo) {
+      setTodoTitle(todo.title);
+      setTodoDescription(todo.description || "");
+      setEditTodoId(id);
+      setEditOpen(true);
+    }
+  };
+
+  // Submit Edit
+  const handleEditSubmit = () => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === editTodoId
+          ? { ...todo, title: todoTitle, description: todoDescription }
+          : todo
+      )
+    );
+    setEditOpen(false);
+    setTodoTitle("");
+    setTodoDescription("");
+    setEditTodoId(null);
+  };
+
   // Table Columns
   const columns = [
     { field: "title", headerName: "Title" },
@@ -99,10 +146,7 @@ const TodoApp = () => {
       field: "edit",
       headerName: "Edit",
       renderCell: ({ row }) => (
-        <IconButton
-          color="primary"
-          onClick={() => startEditing(row.id, row.title)}
-        >
+        <IconButton color="primary" onClick={() => startEditing(row.id)}>
           <Edit />
         </IconButton>
       ),
@@ -118,22 +162,13 @@ const TodoApp = () => {
     },
   ];
 
-
-  // Table Rows
-  // const rows = todos.map((todo) => ({
-  //   id: todo.id,
-  //   title: todo.text,
-  //   description: todo.description || "",
-  //   status: todo.completed ? "Completed" : "Pending",
-  // }));
-
-  // Table Rows (FOR TESTING ONLY - using dummy data)
-  const rows = [
-    { id: 1, title: "Buy groceries", description: "Milk, Eggs, Bread", status: "Pending" },
-    { id: 2, title: "Meeting with client", description: "Project update at 3PM", status: "Completed" },
-    { id: 3, title: "Workout", description: "Gym session at 6PM", status: "Pending" },
-  ];
-
+  // Table Rows (from actual todos)
+  const rows = todos.map((todo) => ({
+    id: todo.id,
+    title: todo.title,
+    description: todo.description || "",
+    status: todo.completed ? "Completed" : "Pending",
+  }));
 
   return (
     <Box sx={{ p: 4, maxWidth: 800, margin: "0 auto" }}>
@@ -149,17 +184,14 @@ const TodoApp = () => {
             alignItems: "center",
             gap: 2,
             color: "white",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
           }}
           elevation={3}
         >
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Welcome, {user.name}
             </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              {user.email}
-            </Typography>
+            <Typography variant="body2">{user.email}</Typography>
           </Box>
         </Paper>
       )}
@@ -183,23 +215,53 @@ const TodoApp = () => {
               index === 0
                 ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                 : index === 1
-                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
-                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
+                ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
+                : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
             }
             onClick={() => setSelectedCard(index)}
             isActive={selectedCard === index}
             activeStyles={{
               boxShadow: "0 0 15px rgba(255,255,255,0.6)",
             }}
-            inactiveStyles={{}}
           />
         ))}
       </Box>
 
       {/* Add Task */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-        <CustomButton sx={{p:2}}>Add Tasks</CustomButton>
+        <CustomButton
+          sx={{ p: 2 }}
+          variant="contained"
+          onClick={() => setOpen(true)}
+        >
+          Add Task
+        </CustomButton>
       </Box>
+
+      {/* Add Modal */}
+      <CustomModal
+        open={open}
+        handleClose={() => setOpen(false)}
+        title="Add New Todo"
+        todoTitle={todoTitle}
+        todoDescription={todoDescription}
+        setTodoTitle={setTodoTitle}
+        setTodoDescription={setTodoDescription}
+        onSubmit={handleSubmit}
+      />
+
+      {/* Edit Modal */}
+      <CustomModal
+        open={editOpen}
+        handleClose={() => setEditOpen(false)}
+        title="Edit Todo"
+        todoTitle={todoTitle}
+        todoDescription={todoDescription}
+        setTodoTitle={setTodoTitle}
+        setTodoDescription={setTodoDescription}
+        onSubmit={handleEditSubmit}
+      />
+
       {/* Table */}
       <CustomTable columns={columns} rows={rows} minWidth={700} />
     </Box>
