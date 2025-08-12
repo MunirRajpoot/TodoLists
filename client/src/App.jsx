@@ -17,6 +17,7 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
+      <ToastContainer position="top-right" autoClose={3000} />
       <CssBaseline />
       <Router>
         <Routes>
@@ -30,7 +31,6 @@ function App() {
         </Routes>
       </Router>
 
-      <ToastContainer position="top-right" autoClose={3000} />
     </AuthProvider>
   );
 }

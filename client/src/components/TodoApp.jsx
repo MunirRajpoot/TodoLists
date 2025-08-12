@@ -4,6 +4,8 @@ import CustomCard from "./CustomCard.jsx";
 import CustomTable from "./CustomTable.jsx";
 import CustomModal from "./CustomModal.jsx";
 import CustomButton from "./CustomButton.jsx";
+import {toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
   Typography,
@@ -65,6 +67,7 @@ const TodoApp = () => {
         completedAt: null
       }
     ]);
+    toast.success("Todo added successfully!");
     resetForm();
     setOpen(false);
   };
@@ -78,6 +81,7 @@ const TodoApp = () => {
           : todo
       )
     );
+    toast.success("Todo updated successfully!");
     resetForm();
     setEditOpen(false);
     setEditTodoId(null);
@@ -86,6 +90,7 @@ const TodoApp = () => {
   // Delete
   const deleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
+    toast.error("Todo deleted successfully!");
   };
 
   // Complete toggle
@@ -97,6 +102,7 @@ const TodoApp = () => {
           : todo
       )
     );
+    toast.success("Todo Completed successfully!");
   };
 
   // Start editing
@@ -163,8 +169,18 @@ const TodoApp = () => {
     },
   ];
 
+  // Priority sorting map
+  const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+
+  // Sort todos: Priority → Date → Time
+  const sortedTodos = [...todos].sort((a, b) =>
+    priorityOrder[a.priority] - priorityOrder[b.priority] ||
+    new Date(a.date) - new Date(b.date) ||
+    new Date(`1970-01-01T${a.time}`) - new Date(`1970-01-01T${b.time}`)
+  );
+
   // Rows
-  const rows = todos.map((todo) => ({
+  const rows = sortedTodos.map((todo) => ({
     id: todo.id,
     title: todo.title,
     description: todo.description || "",
@@ -219,8 +235,8 @@ const TodoApp = () => {
               index === 0
                 ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                 : index === 1
-                ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
-                : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
+                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
+                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
             }
             onClick={() => setSelectedCard(index)}
             isActive={selectedCard === index}
@@ -231,7 +247,7 @@ const TodoApp = () => {
 
       {/* Add Task */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-        <CustomButton variant="contained" onClick={() => setOpen(true)}>
+        <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
           Add Task
         </CustomButton>
       </Box>
@@ -239,7 +255,10 @@ const TodoApp = () => {
       {/* Add Modal */}
       <CustomModal
         open={open}
-        handleClose={() => setOpen(false)}
+        handleClose={() => {
+          setOpen(false);
+          resetForm()
+        }}
         title="Add New Todo"
         todoTitle={todoTitle}
         todoDescription={todoDescription}
@@ -257,7 +276,10 @@ const TodoApp = () => {
       {/* Edit Modal */}
       <CustomModal
         open={editOpen}
-        handleClose={() => setEditOpen(false)}
+        handleClose={() => {
+          resetForm()
+          setEditOpen(false);
+        }}
         title="Edit Todo"
         todoTitle={todoTitle}
         todoDescription={todoDescription}
