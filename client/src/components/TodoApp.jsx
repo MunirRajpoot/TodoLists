@@ -4,6 +4,9 @@ import CustomCard from "./CustomCard.jsx";
 import CustomTable from "./CustomTable.jsx";
 import CustomModal from "./CustomModal.jsx";
 import CustomButton from "./CustomButton.jsx";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
   Typography,
@@ -28,20 +31,23 @@ const TodoApp = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [editTodoId, setEditTodoId] = useState(null);
 
-  // Load todos
+  // Load todos from backend
   useEffect(() => {
-    const savedTodos = localStorage.getItem(`todos_${user?.id}`);
-    if (savedTodos) {
-      setTodos(JSON.parse(savedTodos));
+    if (user) {
+      axios.get(`/api/todos/?userId=${user.id}`)
+        .then(res => setTodos(res.data))
+        .catch(err => console.error(err));
     }
   }, [user]);
 
   // Save todos
   useEffect(() => {
     if (user) {
-      localStorage.setItem(`todos_${user.id}`, JSON.stringify(todos));
+      axios.get("http://localhost:5000/api/todos")
+        .then(res => setTodos(res.data))
+        .catch(err => console.error(err));
     }
-  }, [todos, user]);
+  }, [user]);
 
   // Summary cards
   const cards = [
@@ -52,56 +58,71 @@ const TodoApp = () => {
 
   // Add Todo
   const handleSubmit = () => {
-    setTodos([
-      ...todos,
-      {
-        id: Date.now(),
-        title: todoTitle,
-        description: todoDescription,
-        date: todoDate,
-        time: todoTime,
-        priority,
-        completed: false,
-        completedAt: null
-      }
-    ]);
-    resetForm();
-    setOpen(false);
+    axios.post("http://localhost:5000/api/todos", {
+      title: todoTitle,
+      description: todoDescription,
+      date: todoDate,
+      time: todoTime,
+      priority,
+      completed: false,
+      completedAt: null
+    })
+      .then(res => {
+        setTodos([...todos, res.data]);
+        resetForm();
+        setOpen(false);
+        toast.success("Todo added successfully!");
+      })
+      .catch(err => console.error(err));
+
   };
 
   // Edit Todo
   const handleEditSubmit = () => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === editTodoId
-          ? { ...todo, title: todoTitle, description: todoDescription, date: todoDate, time: todoTime, priority }
-          : todo
-      )
-    );
-    resetForm();
-    setEditOpen(false);
-    setEditTodoId(null);
+    axios.put(`http://localhost:5000/api/todos/${editTodoId}`, {
+      title: todoTitle,
+      description: todoDescription,
+      date: todoDate,
+      time: todoTime,
+      priority
+    })
+      .then(res => {
+        setTodos(todos.map(todo => todo._id === editTodoId ? res.data : todo));
+        resetForm();
+        setEditOpen(false);
+        setEditTodoId(null);
+        toast.success("Todo updated successfully!");
+      })
+      .catch(err => console.error(err));
   };
 
   // Delete
   const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    axios.delete(`http://localhost:5000/api/todos/${id}`)
+      .then(() => {
+        setTodos(todos.filter(todo => todo._id !== id));
+        toast.info("Todo deleted successfully!");
+      })
+      .catch(err => console.error(err));
+
   };
 
-  // Complete toggle
+  // Toggle complete
   const toggleComplete = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id
-          ? { ...todo, completed: !todo.completed, completedAt: !todo.completed ? new Date() : null }
-          : todo
-      )
-    );
+    axios.patch(`http://localhost:5000/api/todos/${id}/toggle`)
+      .then(res => {
+        setTodos(todos.map(todo => todo._id === id ? res.data : todo));
+        toast.success(
+          res.data.completed ? "Todo marked as completed!" : "Todo marked as pending"
+        );
+      })
+      .catch(err => console.error(err));
+
   };
 
   // Start editing
   const startEditing = (id) => {
-    const todo = todos.find((t) => t.id === id);
+    const todo = todos.find((t) => t._id === id);
     if (todo) {
       setTodoTitle(todo.title);
       setTodoDescription(todo.description || "");
@@ -163,9 +184,24 @@ const TodoApp = () => {
     },
   ];
 
+  // Priority sorting Code
+  const priorityOrder = {
+    High: 1,
+    Medium: 2,
+    Low: 3,
+  };
+
+  const sortedTodos = [...todos].sort((a, b) => {
+    return (
+      priorityOrder[a.priority] - priorityOrder[b.priority] ||
+      new Date(a.date) - new Date(b.date) ||
+      new Date(`1970-01-01T${a.time}`) - new Date(`1970-01-01T${b.time}`)
+    );
+  });
+
   // Rows
-  const rows = todos.map((todo) => ({
-    id: todo.id,
+  const rows = sortedTodos.map((todo) => ({
+    id: todo._id,
     title: todo.title,
     description: todo.description || "",
     date: todo.date || "",
@@ -173,7 +209,6 @@ const TodoApp = () => {
     priority: todo.priority || "Low",
     status: todo.completed ? "Completed" : "Pending",
   }));
-
   return (
     <Box sx={{ p: 4, maxWidth: 1000, margin: "0 auto" }}>
       {/* User Info */}
@@ -219,8 +254,8 @@ const TodoApp = () => {
               index === 0
                 ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                 : index === 1
-                ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
-                : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
+                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
+                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
             }
             onClick={() => setSelectedCard(index)}
             isActive={selectedCard === index}
@@ -231,7 +266,7 @@ const TodoApp = () => {
 
       {/* Add Task */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-        <CustomButton variant="contained" onClick={() => setOpen(true)}>
+        <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
           Add Task
         </CustomButton>
       </Box>
@@ -239,7 +274,11 @@ const TodoApp = () => {
       {/* Add Modal */}
       <CustomModal
         open={open}
-        handleClose={() => setOpen(false)}
+        handleClose={() => {
+          resetForm();
+          setOpen(false)
+        }
+        }
         title="Add New Todo"
         todoTitle={todoTitle}
         todoDescription={todoDescription}
@@ -257,7 +296,10 @@ const TodoApp = () => {
       {/* Edit Modal */}
       <CustomModal
         open={editOpen}
-        handleClose={() => setEditOpen(false)}
+        handleClose={() => {
+          resetForm();
+          setEditOpen(false)
+        }}
         title="Edit Todo"
         todoTitle={todoTitle}
         todoDescription={todoDescription}
