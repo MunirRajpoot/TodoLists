@@ -29,6 +29,7 @@ const Login = () => {
       footerLinkPath="/signup"
       isLoading={isLoading}
       error={error}
+      checkboxText="Remember me"
     />
   );
 };

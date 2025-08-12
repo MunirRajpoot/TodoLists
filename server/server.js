@@ -3,7 +3,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
+// Load env variables
 dotenv.config();
+
 const app = express();
 
 // Middleware
@@ -18,10 +20,10 @@ app.get('/', (req, res) => {
     res.send('Server is running!');
 });
 
-app.use('/api/auth', require('./routes/authRoutes')); // ✅ Use /api/auth
-app.use('/api/todos', require('./routes/todoRoutes'));
+app.use('/api/auth', require('./routes/authRoutes')); // Authentication routes
+app.use('/api/todos', require('./routes/todoRoutes')); // Todo routes
 
-// Start the server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, (err) => {
     if (err) {
