@@ -2,19 +2,48 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
 import { Link } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import SHA256 from "crypto-js/sha256";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { register, isLoading, error } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await register({ name, email, password });
-    navigate("/login");
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const hashedPassword = SHA256(password).toString();
+      const { data } = await axios.post("http://localhost:5000/api/auth/register", {
+        name,
+        email,
+        password: hashedPassword,
+      });
+
+      // Save token
+      localStorage.setItem("token", data.token);
+
+      // Save user in localStorage
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      toast.success("Account created successfully!");
+      navigate("/login");
+    } catch (err) {
+      const msg = err.response?.data?.message || "Registration failed";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const additionalFields = [

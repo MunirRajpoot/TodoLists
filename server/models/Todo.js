@@ -5,10 +5,12 @@ const todoSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, "Title is required"],
+      trim: true,
     },
     description: {
       type: String,
       default: "",
+      trim: true,
     },
     date: {
       type: String, // "YYYY-MM-DD"
@@ -31,8 +33,8 @@ const todoSchema = new mongoose.Schema(
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // if you have authentication
-      required: false,
+      ref: "User",
+      required: [true, "User ID is required"], // Now required so every todo belongs to a user
     },
   },
   { timestamps: true }
