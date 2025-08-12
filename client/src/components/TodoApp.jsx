@@ -9,7 +9,6 @@ import {
   Typography,
   Paper,
   Chip,
-  Button,
   IconButton
 } from "@mui/material";
 import { Delete, Edit, CheckCircle } from "@mui/icons-material";
@@ -18,13 +17,18 @@ const TodoApp = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+
   const [todoTitle, setTodoTitle] = useState("");
   const [todoDescription, setTodoDescription] = useState("");
+  const [todoDate, setTodoDate] = useState("");
+  const [todoTime, setTodoTime] = useState("");
+  const [priority, setPriority] = useState("Low");
+
   const [todos, setTodos] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [editTodoId, setEditTodoId] = useState(null);
 
-  // Load todos from localStorage
+  // Load todos
   useEffect(() => {
     const savedTodos = localStorage.getItem(`todos_${user?.id}`);
     if (savedTodos) {
@@ -32,14 +36,14 @@ const TodoApp = () => {
     }
   }, [user]);
 
-  // Save todos to localStorage
+  // Save todos
   useEffect(() => {
     if (user) {
       localStorage.setItem(`todos_${user.id}`, JSON.stringify(todos));
     }
   }, [todos, user]);
 
-  // Cards summary
+  // Summary cards
   const cards = [
     { id: 1, title: "Total Tasks", count: todos.length },
     { id: 2, title: "Pending Tasks", count: todos.filter(t => !t.completed).length },
@@ -54,65 +58,76 @@ const TodoApp = () => {
         id: Date.now(),
         title: todoTitle,
         description: todoDescription,
+        date: todoDate,
+        time: todoTime,
+        priority,
         completed: false,
         completedAt: null
       }
     ]);
-    setTodoTitle("");
-    setTodoDescription("");
+    resetForm();
     setOpen(false);
   };
 
-  // Delete Todo
+  // Edit Todo
+  const handleEditSubmit = () => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === editTodoId
+          ? { ...todo, title: todoTitle, description: todoDescription, date: todoDate, time: todoTime, priority }
+          : todo
+      )
+    );
+    resetForm();
+    setEditOpen(false);
+    setEditTodoId(null);
+  };
+
+  // Delete
   const deleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  // Toggle Complete
+  // Complete toggle
   const toggleComplete = (id) => {
     setTodos(
       todos.map((todo) =>
         todo.id === id
-          ? {
-              ...todo,
-              completed: !todo.completed,
-              completedAt: !todo.completed ? new Date() : null,
-            }
+          ? { ...todo, completed: !todo.completed, completedAt: !todo.completed ? new Date() : null }
           : todo
       )
     );
   };
 
-  // Start Editing
+  // Start editing
   const startEditing = (id) => {
     const todo = todos.find((t) => t.id === id);
     if (todo) {
       setTodoTitle(todo.title);
       setTodoDescription(todo.description || "");
+      setTodoDate(todo.date || "");
+      setTodoTime(todo.time || "");
+      setPriority(todo.priority || "Low");
       setEditTodoId(id);
       setEditOpen(true);
     }
   };
 
-  // Submit Edit
-  const handleEditSubmit = () => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === editTodoId
-          ? { ...todo, title: todoTitle, description: todoDescription }
-          : todo
-      )
-    );
-    setEditOpen(false);
+  const resetForm = () => {
     setTodoTitle("");
     setTodoDescription("");
-    setEditTodoId(null);
+    setTodoDate("");
+    setTodoTime("");
+    setPriority("Low");
   };
 
-  // Table Columns
+  // Columns
   const columns = [
     { field: "title", headerName: "Title" },
     { field: "description", headerName: "Description" },
+    { field: "date", headerName: "Date" },
+    { field: "time", headerName: "Time" },
+    { field: "priority", headerName: "Priority" },
     {
       field: "status",
       headerName: "Status",
@@ -128,50 +143,39 @@ const TodoApp = () => {
       ),
     },
     {
-      field: "complete",
-      headerName: "Complete",
-      renderCell: ({ row }) =>
-        row.status !== "Completed" ? (
-          <Button
-            size="small"
-            color="success"
-            onClick={() => toggleComplete(row.id)}
-            startIcon={<CheckCircle />}
-          >
-            Complete
-          </Button>
-        ) : null,
-    },
-    {
-      field: "edit",
-      headerName: "Edit",
+      field: "actions",
+      headerName: "Actions",
       renderCell: ({ row }) => (
-        <IconButton color="primary" onClick={() => startEditing(row.id)}>
-          <Edit />
-        </IconButton>
-      ),
-    },
-    {
-      field: "delete",
-      headerName: "Delete",
-      renderCell: ({ row }) => (
-        <IconButton color="error" onClick={() => deleteTodo(row.id)}>
-          <Delete />
-        </IconButton>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {row.status !== "Completed" && (
+            <IconButton color="success" onClick={() => toggleComplete(row.id)}>
+              <CheckCircle />
+            </IconButton>
+          )}
+          <IconButton color="primary" onClick={() => startEditing(row.id)}>
+            <Edit />
+          </IconButton>
+          <IconButton color="error" onClick={() => deleteTodo(row.id)}>
+            <Delete />
+          </IconButton>
+        </Box>
       ),
     },
   ];
 
-  // Table Rows (from actual todos)
+  // Rows
   const rows = todos.map((todo) => ({
     id: todo.id,
     title: todo.title,
     description: todo.description || "",
+    date: todo.date || "",
+    time: todo.time || "",
+    priority: todo.priority || "Low",
     status: todo.completed ? "Completed" : "Pending",
   }));
 
   return (
-    <Box sx={{ p: 4, maxWidth: 800, margin: "0 auto" }}>
+    <Box sx={{ p: 4, maxWidth: 1000, margin: "0 auto" }}>
       {/* User Info */}
       {user && (
         <Paper
@@ -201,7 +205,7 @@ const TodoApp = () => {
         sx={{
           width: "100%",
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(min(200px, 100%), 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(250px, 100%), 1fr))",
           gap: 2,
           mb: 3,
         }}
@@ -220,20 +224,14 @@ const TodoApp = () => {
             }
             onClick={() => setSelectedCard(index)}
             isActive={selectedCard === index}
-            activeStyles={{
-              boxShadow: "0 0 15px rgba(255,255,255,0.6)",
-            }}
+            activeStyles={{ boxShadow: "0 0 15px rgba(255,255,255,0.6)" }}
           />
         ))}
       </Box>
 
       {/* Add Task */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-        <CustomButton
-          sx={{ p: 2 }}
-          variant="contained"
-          onClick={() => setOpen(true)}
-        >
+        <CustomButton variant="contained" onClick={() => setOpen(true)}>
           Add Task
         </CustomButton>
       </Box>
@@ -245,6 +243,12 @@ const TodoApp = () => {
         title="Add New Todo"
         todoTitle={todoTitle}
         todoDescription={todoDescription}
+        todoDate={todoDate}
+        setTodoDate={setTodoDate}
+        todoTime={todoTime}
+        setTodoTime={setTodoTime}
+        priority={priority}
+        setPriority={setPriority}
         setTodoTitle={setTodoTitle}
         setTodoDescription={setTodoDescription}
         onSubmit={handleSubmit}
@@ -257,13 +261,19 @@ const TodoApp = () => {
         title="Edit Todo"
         todoTitle={todoTitle}
         todoDescription={todoDescription}
+        todoDate={todoDate}
+        setTodoDate={setTodoDate}
+        todoTime={todoTime}
+        setTodoTime={setTodoTime}
+        priority={priority}
+        setPriority={setPriority}
         setTodoTitle={setTodoTitle}
         setTodoDescription={setTodoDescription}
         onSubmit={handleEditSubmit}
       />
 
       {/* Table */}
-      <CustomTable columns={columns} rows={rows} minWidth={700} />
+      <CustomTable columns={columns} rows={rows} minWidth={900} />
     </Box>
   );
 };

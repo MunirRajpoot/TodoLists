@@ -6,6 +6,7 @@ import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import MenuItem from "@mui/material/MenuItem"; // For select dropdown
 import InputField from "./InputField";
 import CustomButton from "./CustomButton";
 
@@ -18,8 +19,14 @@ const CustomModal = ({
     todoDescription,
     setTodoTitle,
     setTodoDescription,
+    todoDate,
+    setTodoDate,
+    todoTime,
+    setTodoTime,
+    priority,
+    setPriority,
     onSubmit,
-    width = 500, // Increased width
+    width = 500,
 }) => {
     const style = {
         position: "absolute",
@@ -40,33 +47,26 @@ const CustomModal = ({
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
             slotProps={{
-                backdrop: {
-                    timeout: 500,
-                },
+                backdrop: { timeout: 500 },
             }}
         >
             <Fade in={open}>
                 <Box sx={style}>
-                    {/* Header with Close Button */}
+                    {/* Header */}
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                        <Typography variant="h6" component="h2">
-                            {title}
-                        </Typography>
+                        <Typography variant="h6">{title}</Typography>
                         <IconButton onClick={handleClose} size="small">
                             <CloseIcon />
                         </IconButton>
                     </Box>
 
                     {subtitle && (
-                        <Typography
-                            variant="body2"
-                            sx={{ mb: 2, color: "text.secondary" }}
-                        >
+                        <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
                             {subtitle}
                         </Typography>
                     )}
 
-                    {/* Title Input */}
+                    {/* Title */}
                     <InputField
                         label="Enter Title"
                         variant="outlined"
@@ -74,9 +74,10 @@ const CustomModal = ({
                         value={todoTitle}
                         onChange={(e) => setTodoTitle(e.target.value)}
                         sx={{ mb: 2 }}
+                        
                     />
 
-                    {/* Description Input */}
+                    {/* Description */}
                     <InputField
                         label="Enter Description"
                         variant="outlined"
@@ -88,12 +89,51 @@ const CustomModal = ({
                         sx={{ mb: 2 }}
                     />
 
+                    {/* Date */}
+                    <InputField
+                        label="Date"
+                        variant="outlined"
+                        fullWidth
+                        type="date"
+                        value={todoDate}
+                        onChange={(e) => setTodoDate(e.target.value)}
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{ shrink: true }}
+                    />
+
+                    {/* Time */}
+                    <InputField
+                        label="Time"
+                        variant="outlined"
+                        fullWidth
+                        type="time"
+                        value={todoTime}
+                        onChange={(e) => setTodoTime(e.target.value)}
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{ shrink: true }}
+                    />
+
+                    {/* Priority */}
+                    <InputField
+                        label="Priority"
+                        variant="outlined"
+                        fullWidth
+                        select
+                        value={priority}
+                        onChange={(e) => setPriority(e.target.value)}
+                        sx={{ mb: 2 }}
+                    >
+                        <MenuItem value="Low">Low</MenuItem>
+                        <MenuItem value="Medium">Medium</MenuItem>
+                        <MenuItem value="High">High</MenuItem>
+                    </InputField>
+
                     {/* Action Buttons */}
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
                         <CustomButton
                             variant="contained"
                             onClick={onSubmit}
-                            disabled={!todoTitle.trim() || !todoDescription.trim()}
+                            disabled={!todoTitle.trim() || !todoDescription.trim() || !todoDate || !todoTime || !priority}
                         >
                             Save
                         </CustomButton>

@@ -1,7 +1,6 @@
 import React from "react";
 import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-import CountUp from "react-countup";
 
 const MotionCard = motion(Card);
 
@@ -43,7 +42,7 @@ const CustomCard = ({
                         {title}
                     </Typography>
                     <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                        <CountUp end={count} duration={1.5} separator="," />
+                        {count?.toLocaleString()}
                     </Typography>
                 </CardContent>
             </CardActionArea>
