@@ -256,6 +256,8 @@ const TodoApp = () => {
                 : index === 1
                   ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
                   : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
+                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
+                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
             }
             onClick={() => setSelectedCard(index)}
             isActive={selectedCard === index}
@@ -266,6 +268,7 @@ const TodoApp = () => {
 
       {/* Add Task */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
+        <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
         <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
           Add Task
         </CustomButton>
