@@ -15,22 +15,18 @@ import {
   IconButton
 } from "@mui/material";
 import { Delete, Edit, CheckCircle } from "@mui/icons-material";
-
 const TodoApp = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-
   const [todoTitle, setTodoTitle] = useState("");
   const [todoDescription, setTodoDescription] = useState("");
   const [todoDate, setTodoDate] = useState("");
   const [todoTime, setTodoTime] = useState("");
   const [priority, setPriority] = useState("Low");
-
   const [todos, setTodos] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [editTodoId, setEditTodoId] = useState(null);
-
   // Load todos from backend
   useEffect(() => {
     if (user) {
@@ -39,7 +35,6 @@ const TodoApp = () => {
         .catch(err => console.error(err));
     }
   }, [user]);
-
   // Save todos
   useEffect(() => {
     if (user) {
@@ -48,14 +43,12 @@ const TodoApp = () => {
         .catch(err => console.error(err));
     }
   }, [user]);
-
   // Summary cards
   const cards = [
     { id: 1, title: "Total Tasks", count: todos.length },
     { id: 2, title: "Pending Tasks", count: todos.filter(t => !t.completed).length },
     { id: 3, title: "Completed Tasks", count: todos.filter(t => t.completed).length },
   ];
-
   // Add Todo
   const handleSubmit = () => {
     axios.post("http://localhost:5000/api/todos", {
@@ -74,9 +67,7 @@ const TodoApp = () => {
         toast.success("Todo added successfully!");
       })
       .catch(err => console.error(err));
-
   };
-
   // Edit Todo
   const handleEditSubmit = () => {
     axios.put(`http://localhost:5000/api/todos/${editTodoId}`, {
@@ -95,7 +86,6 @@ const TodoApp = () => {
       })
       .catch(err => console.error(err));
   };
-
   // Delete
   const deleteTodo = (id) => {
     axios.delete(`http://localhost:5000/api/todos/${id}`)
@@ -104,9 +94,7 @@ const TodoApp = () => {
         toast.info("Todo deleted successfully!");
       })
       .catch(err => console.error(err));
-
   };
-
   // Toggle complete
   const toggleComplete = (id) => {
     axios.patch(`http://localhost:5000/api/todos/${id}/toggle`)
@@ -117,9 +105,7 @@ const TodoApp = () => {
         );
       })
       .catch(err => console.error(err));
-
   };
-
   // Start editing
   const startEditing = (id) => {
     const todo = todos.find((t) => t._id === id);
@@ -133,7 +119,6 @@ const TodoApp = () => {
       setEditOpen(true);
     }
   };
-
   const resetForm = () => {
     setTodoTitle("");
     setTodoDescription("");
@@ -141,7 +126,6 @@ const TodoApp = () => {
     setTodoTime("");
     setPriority("Low");
   };
-
   // Columns
   const columns = [
     { field: "title", headerName: "Title" },
@@ -183,14 +167,12 @@ const TodoApp = () => {
       ),
     },
   ];
-
   // Priority sorting Code
   const priorityOrder = {
     High: 1,
     Medium: 2,
     Low: 3,
   };
-
   const sortedTodos = [...todos].sort((a, b) => {
     return (
       priorityOrder[a.priority] - priorityOrder[b.priority] ||
@@ -198,7 +180,6 @@ const TodoApp = () => {
       new Date(`1970-01-01T${a.time}`) - new Date(`1970-01-01T${b.time}`)
     );
   });
-
   // Rows
   const rows = sortedTodos.map((todo) => ({
     id: todo._id,
@@ -234,7 +215,6 @@ const TodoApp = () => {
           </Box>
         </Paper>
       )}
-
       {/* Cards */}
       <Box
         sx={{
@@ -256,8 +236,6 @@ const TodoApp = () => {
                 : index === 1
                   ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
                   : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
-                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
-                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
             }
             onClick={() => setSelectedCard(index)}
             isActive={selectedCard === index}
@@ -265,15 +243,12 @@ const TodoApp = () => {
           />
         ))}
       </Box>
-
       {/* Add Task */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-        <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
         <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
           Add Task
         </CustomButton>
       </Box>
-
       {/* Add Modal */}
       <CustomModal
         open={open}
@@ -295,7 +270,6 @@ const TodoApp = () => {
         setTodoDescription={setTodoDescription}
         onSubmit={handleSubmit}
       />
-
       {/* Edit Modal */}
       <CustomModal
         open={editOpen}
@@ -316,11 +290,9 @@ const TodoApp = () => {
         setTodoDescription={setTodoDescription}
         onSubmit={handleEditSubmit}
       />
-
       {/* Table */}
       <CustomTable columns={columns} rows={rows} minWidth={900} />
     </Box>
   );
 };
-
 export default TodoApp;
