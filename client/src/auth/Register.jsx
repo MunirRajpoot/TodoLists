@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
+import { Link } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
@@ -42,6 +43,14 @@ const Register = () => {
       footerLinkPath="/login"
       isLoading={isLoading}
       error={error}
+      checkboxText={
+        <>
+          I agree to the{" "}
+          <Link href="#" sx={{ color: "#9c6cff" }}>
+            Terms & Conditions
+          </Link>
+        </>
+      }
     />
   );
 };

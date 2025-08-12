@@ -28,7 +28,8 @@ const AuthForm = ({
   footerLinkText,
   footerLinkPath,
   isLoading,
-  error
+  error,
+  checkboxText
 }) => {
   
   const [showPassword, setShowPassword] = useState(false);
@@ -167,15 +168,14 @@ const AuthForm = ({
               }}
             />
 
-            <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-              <input type="checkbox" id="terms" required />
-              <Typography variant="body2" sx={{ ml: 1 }}>
-                I agree to the{" "}
-                <Link href="#" sx={{ color: "#9c6cff" }}>
-                  Terms & Conditions
-                </Link>
-              </Typography>
-            </Box>
+            {checkboxText && (
+              <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                <input type="checkbox" id="terms" required={title === "Create an account"} />
+                <Typography variant="body2" sx={{ ml: 1 }}>
+                  {checkboxText}
+                </Typography>
+              </Box>
+            )}
 
             <Button
               type="submit"
