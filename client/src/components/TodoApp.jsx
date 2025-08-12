@@ -268,7 +268,7 @@ const TodoApp = () => {
 
       {/* Add Task */}
       <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-        <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
+
         <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true) }}>
           Add Task
         </CustomButton>
