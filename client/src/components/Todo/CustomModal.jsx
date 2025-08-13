@@ -6,9 +6,11 @@ import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import MenuItem from "@mui/material/MenuItem"; // For select dropdown
+import MenuItem from "@mui/material/MenuItem";
 import InputField from "./InputField";
 import CustomButton from "./CustomButton";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const CustomModal = ({
     open,
@@ -28,16 +30,22 @@ const CustomModal = ({
     onSubmit,
     width = 500,
 }) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    
     const style = {
         position: "absolute",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: width,
+        width: isMobile ? "90%" : width,
+        maxWidth: "95vw",
+        maxHeight: "90vh",
+        overflowY: "auto",
         bgcolor: "background.paper",
         borderRadius: "8px",
         boxShadow: 24,
-        p: 4,
+        p: isMobile ? 2 : 4,
     };
 
     return (
@@ -74,7 +82,6 @@ const CustomModal = ({
                         value={todoTitle}
                         onChange={(e) => setTodoTitle(e.target.value)}
                         sx={{ mb: 2 }}
-                        
                     />
 
                     {/* Description */}
@@ -83,7 +90,7 @@ const CustomModal = ({
                         variant="outlined"
                         fullWidth
                         multiline
-                        rows={3}
+                        rows={isMobile ? 2 : 2}
                         value={todoDescription}
                         onChange={(e) => setTodoDescription(e.target.value)}
                         sx={{ mb: 2 }}

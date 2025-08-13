@@ -216,7 +216,7 @@ const TodoApp = () => {
   }));
 
   return (
-    <Box sx={{ p: 4, maxWidth: 1000, margin: "0 auto" }}>
+    <Box sx={{ p: 4, maxWidth: 1100, margin: "0 auto" }}>
       {/* User Info */}
       {user && (
         <Paper
