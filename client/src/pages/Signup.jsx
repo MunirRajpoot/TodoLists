@@ -1,5 +1,5 @@
 import React from 'react'
-import Register from '../auth/Register'
+import Register from '../components/auth/Register'
 
 const SignupPage = () => {
   return (

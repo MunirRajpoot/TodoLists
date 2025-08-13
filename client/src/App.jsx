@@ -6,7 +6,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CssBaseline } from "@mui/material";
-import Footer from './components/Footer.jsx';
+import Footer from './components/layout/Footer.jsx';
 
 // Simple private route check
 const PrivateRoute = ({ children }) => {
