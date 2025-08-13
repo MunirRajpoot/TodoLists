@@ -6,10 +6,22 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import AdbIcon from '@mui/icons-material/Adb';
-import { useAuth } from '../../context/AuthContext';
-
+import { useNavigate } from 'react-router-dom';
 function Navbar() {
-    const { user, logout } = useAuth();
+    const [user, setUser] = React.useState(null);
+    const navigate = useNavigate();
+    React.useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
+
+    const logout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+    };
 
     return (
         <AppBar
@@ -41,18 +53,20 @@ function Navbar() {
                     </Box>
 
                     {/* Right: Logout button */}
-                    <Button
-                        color="inherit"
-                        variant="outlined"
-                        onClick={logout}
-                        sx={{
-                            borderColor: 'white',
-                            color: 'white',
-                            '&:hover': { borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }
-                        }}
-                    >
-                        Logout
-                    </Button>
+                    {user && (
+                        <Button
+                            color="inherit"
+                            variant="outlined"
+                            onClick={logout}
+                            sx={{
+                                borderColor: 'white',
+                                color: 'white',
+                                '&:hover': { borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }
+                            }}
+                        >
+                            Logout
+                        </Button>
+                    )}
                 </Toolbar>
             </Container>
         </AppBar>

@@ -1,18 +1,48 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
-import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import SHA256 from "crypto-js/sha256";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading, error } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login({ email, password });
-    navigate("/dashboard");
+    setIsLoading(true);
+    setError("");
+
+    try {
+      // Hash password before sending
+      const hashedPassword = SHA256(password).toString();
+
+      const { data } = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password: hashedPassword,
+      });
+
+      // Save token and user to localStorage
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      toast.success("Logged in successfully!");
+      navigate("/dashboard");
+    } catch (err) {
+      const msg = err.response?.data?.message || "Login failed";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

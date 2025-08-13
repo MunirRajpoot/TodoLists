@@ -4,19 +4,19 @@ const bcrypt = require("bcryptjs");
 
 // REGISTER
 exports.signup = async (req, res) => {
-  const { name, email, password } = req.body; // already hashed from frontend
+  const { name, email, password } = req.body; // already hashed (SHA256) from frontend
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User exists" });
 
-    // Hash again in backend before saving
+    // Hash again before saving in DB
     const doubleHashed = await bcrypt.hash(password, 10);
 
     const user = new User({ name, email, password: doubleHashed });
     await user.save();
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "7h",
     });
 
     res.status(201).json({
@@ -41,7 +41,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "7h",
     });
 
     res.status(200).json({

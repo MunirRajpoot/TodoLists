@@ -4,7 +4,7 @@ import Register from '../auth/Register'
 const SignupPage = () => {
   return (
     <>
-      <Register/>
+      <Register />
     </>
   )
 }
