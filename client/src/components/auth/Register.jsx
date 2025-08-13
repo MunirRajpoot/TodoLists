@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
-import { Link } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import axios from "axios";
 import { toast } from "react-toastify";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -17,8 +18,15 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(email)) {
+      setIsLoading(false);
+      const msg = "Please enter a valid email address.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
 
-    // Password regex validation (same as backend)
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*\s).{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -31,23 +39,15 @@ const Register = () => {
     }
 
     try {
-      // Send plain password (HTTPS encrypts during transmission)
-      const { data } = await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post("http://localhost:5000/api/auth/register", {
         name,
         email,
         password,
       });
 
-      // Save token
-      localStorage.setItem("token", data.token);
-
-      // Save user in localStorage
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-
       toast.success("Account created successfully!");
-      navigate("/login");
+      // Navigate to login with spinner trigger
+      navigate("/login", { state: { fromSignup: true } });
     } catch (err) {
       const msg = err.response?.data?.message || "Registration failed";
       setError(msg);
@@ -67,6 +67,21 @@ const Register = () => {
       required: true,
     },
   ];
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          height: "100vh",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ClipLoader color="#9c6cff" size={60} />
+      </Box>
+    );
+  }
 
   return (
     <AuthForm

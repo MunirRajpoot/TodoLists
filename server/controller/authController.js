@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 // Common regex
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*\s).{8,}$/;
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 // REGISTER
 exports.signup = async (req, res) => {

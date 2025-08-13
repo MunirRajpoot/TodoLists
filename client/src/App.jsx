@@ -17,7 +17,7 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={1000} />
       <CssBaseline />
       <Router>
         <Routes>
