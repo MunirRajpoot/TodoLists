@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
 import axios from "axios";
-import SHA256 from "crypto-js/sha256";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -18,15 +17,11 @@ const Login = () => {
     setError("");
 
     try {
-      // Hash password before sending
-      const hashedPassword = SHA256(password).toString();
-
       const { data } = await axios.post("http://localhost:5000/api/auth/login", {
         email,
-        password: hashedPassword,
+        password, // plain password sent securely over HTTPS
       });
 
-      // Save token and user to localStorage
       if (data.token) {
         localStorage.setItem("token", data.token);
       }

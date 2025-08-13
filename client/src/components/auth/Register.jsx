@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
 import { Link } from "@mui/material";
 import axios from "axios";
-import SHA256 from "crypto-js/sha256";
 import { toast } from "react-toastify";
 
 const Register = () => {
@@ -19,12 +18,24 @@ const Register = () => {
     setIsLoading(true);
     setError("");
 
+    // Password regex validation (same as backend)
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*\s).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setIsLoading(false);
+      const msg =
+        "Password must be at least 8 characters long, include uppercase, lowercase, number, special character, and must not contain spaces.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
     try {
-      const hashedPassword = SHA256(password).toString();
+      // Send plain password (HTTPS encrypts during transmission)
       const { data } = await axios.post("http://localhost:5000/api/auth/register", {
         name,
         email,
-        password: hashedPassword,
+        password,
       });
 
       // Save token
