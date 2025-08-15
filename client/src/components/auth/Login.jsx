@@ -70,7 +70,7 @@ const Login = () => {
           alignItems: "center",
         }}
       >
-        <ClipLoader color="#9c6cff" size={60} />
+        <ClipLoader color="#536dfe" size={60} />
       </Box>
     );
   }
@@ -90,6 +90,7 @@ const Login = () => {
       isLoading={isLoading}
       error={error}
       checkboxText="Remember me"
+      imageUrl= "/Images/login.jpg"
     />
   );
 };

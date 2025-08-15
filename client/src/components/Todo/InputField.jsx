@@ -1,5 +1,6 @@
 import React from "react";
 import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
 
 const InputField = ({
     label,
@@ -10,6 +11,8 @@ const InputField = ({
     placeholder,
     fullWidth = true,
     required = false,
+    icon, // Icon component
+    iconPosition = "start", // start or end
     sx = {},
     ...rest
 }) => {
@@ -23,8 +26,15 @@ const InputField = ({
             placeholder={placeholder}
             required={required}
             fullWidth={fullWidth}
-            sx={sx} // Pass custom styles here
-            {...rest} // Allow any other MUI props like `error`, `helperText`, etc.
+            sx={sx}
+            InputProps={{
+                [iconPosition + "Adornment"]: icon ? (
+                    <InputAdornment position={iconPosition}>
+                        {icon}
+                    </InputAdornment>
+                ) : null
+            }}
+            {...rest}
         />
     );
 };

@@ -3,6 +3,7 @@ import CustomCard from "./CustomCard.jsx";
 import CustomTable from "./CustomTable.jsx";
 import CustomModal from "./CustomModal.jsx";
 import CustomButton from "./CustomButton.jsx";
+import InputField from "./InputField.jsx"; // ✅ your reusable input
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -12,7 +13,7 @@ import {
   Chip,
   IconButton
 } from "@mui/material";
-import { Delete, Edit, CheckCircle } from "@mui/icons-material";
+import { Delete, Edit, CheckCircle, Search } from "@mui/icons-material";
 
 const TodoApp = () => {
   const [user, setUser] = useState(null);
@@ -26,8 +27,24 @@ const TodoApp = () => {
   const [todos, setTodos] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [editTodoId, setEditTodoId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // ✅ new state
 
-  // Load logged-in user from localStorage
+  // Highlight helper
+  const highlightMatch = (text, highlight) => {
+    if (!highlight.trim()) return text;
+    const regex = new RegExp(`(${highlight})`, "gi");
+    return text.split(regex).map((part, i) =>
+      regex.test(part) ? (
+        <span key={i} style={{ backgroundColor: "yellow", fontWeight: "bold" }}>
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  // Load logged-in user
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -35,14 +52,14 @@ const TodoApp = () => {
     }
   }, []);
 
-  // Axios config with auth header
+  // Axios config
   const axiosConfig = {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   };
 
-  // Fetch todos for logged-in user
+  // Fetch todos
   useEffect(() => {
     if (user) {
       axios
@@ -153,9 +170,38 @@ const TodoApp = () => {
     setPriority("Low");
   };
 
-  // Columns for CustomTable
+  // Priority sorting
+  const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+  const sortedTodos = [...todos].sort(
+    (a, b) =>
+      priorityOrder[a.priority] - priorityOrder[b.priority] ||
+      new Date(a.date) - new Date(b.date) ||
+      new Date(`1970-01-01T${a.time}`) - new Date(`1970-01-01T${b.time}`)
+  );
+
+  // Rows for table
+  const rows = sortedTodos.map((todo) => ({
+    id: todo._id,
+    title: todo.title,
+    description: todo.description || "",
+    date: todo.date || "",
+    time: todo.time || "",
+    priority: todo.priority || "Low",
+    status: todo.completed ? "Completed" : "Pending",
+  }));
+
+  // ✅ Filter rows based on search term
+  const filteredRows = rows.filter((row) =>
+    row.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Columns for table
   const columns = [
-    { field: "title", headerName: "Title" },
+    {
+      field: "title",
+      headerName: "Title",
+      renderCell: ({ value }) => <>{highlightMatch(value, searchTerm)}</>,
+    },
     { field: "description", headerName: "Description" },
     { field: "date", headerName: "Date" },
     { field: "time", headerName: "Time" },
@@ -184,9 +230,11 @@ const TodoApp = () => {
               <CheckCircle />
             </IconButton>
           )}
-          <IconButton color="primary" onClick={() => startEditing(row.id)}>
-            <Edit />
-          </IconButton>
+          {row.status !== "Completed" && (
+            <IconButton color="primary" onClick={() => startEditing(row.id)}>
+              <Edit />
+            </IconButton>
+          )}
           <IconButton color="error" onClick={() => deleteTodo(row.id)}>
             <Delete />
           </IconButton>
@@ -194,26 +242,6 @@ const TodoApp = () => {
       ),
     },
   ];
-
-  // Priority sorting
-  const priorityOrder = { High: 1, Medium: 2, Low: 3 };
-  const sortedTodos = [...todos].sort(
-    (a, b) =>
-      priorityOrder[a.priority] - priorityOrder[b.priority] ||
-      new Date(a.date) - new Date(b.date) ||
-      new Date(`1970-01-01T${a.time}`) - new Date(`1970-01-01T${b.time}`)
-  );
-
-  // Rows for CustomTable
-  const rows = sortedTodos.map((todo) => ({
-    id: todo._id,
-    title: todo.title,
-    description: todo.description || "",
-    date: todo.date || "",
-    time: todo.time || "",
-    priority: todo.priority || "Low",
-    status: todo.completed ? "Completed" : "Pending",
-  }));
 
   return (
     <Box sx={{ p: 4, maxWidth: 1100, margin: "0 auto" }}>
@@ -260,8 +288,8 @@ const TodoApp = () => {
               index === 0
                 ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                 : index === 1
-                ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
-                : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
+                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
+                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
             }
             onClick={() => setSelectedCard(index)}
             isActive={selectedCard === index}
@@ -275,6 +303,16 @@ const TodoApp = () => {
         <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true); }}>
           Add Task
         </CustomButton>
+      </Box>
+
+      {/* Search Bar */}
+      <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+        <InputField
+          placeholder="Search tasks..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          icon={<Search />}
+        />
       </Box>
 
       {/* Add Todo Modal */}
@@ -320,7 +358,7 @@ const TodoApp = () => {
       />
 
       {/* Todo Table */}
-      <CustomTable columns={columns} rows={rows} minWidth={900} />
+      <CustomTable columns={columns} rows={filteredRows} minWidth={900} />
     </Box>
   );
 };

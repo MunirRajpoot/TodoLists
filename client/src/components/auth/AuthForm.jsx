@@ -29,33 +29,34 @@ const AuthForm = ({
   footerLinkPath,
   isLoading,
   error,
-  checkboxText
+  checkboxText,
+  imageUrl
 }) => {
-  
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#1b1525" }}>
-      {/* Left Side - Image & Branding */}
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        minHeight: "100vh"
+      }}
+    >
+      {/* Left Side - Image */}
       <Box
         sx={{
-          flex: 1,
-          display: { xs: "none", md: "flex" },
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1501785888041-af3ef285b470')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          borderTopLeftRadius: "12px",
-          borderBottomLeftRadius: "12px",
+          flex: { xs: "0 0 auto", md: "0 0 45%" }, // fixed proportion on desktop
+          minWidth: { md: "350px" }, // avoids collapsing too small
+          height: { xs: "220px", sm: "250px", md: "100vh" }, // better height balance
+          backgroundImage: `url(${imageUrl})`,
+          backgroundSize: "cover", // ensures full coverage
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center center", // keeps main subject centered
+          borderTopLeftRadius: { xs: 0, md: "12px" },
+          borderBottomLeftRadius: { xs: 0, md: "12px" },
+          boxShadow: { md: "inset 0 0 0 2000px rgba(10, 8, 8, 0.4)" } // subtle overlay for contrast
         }}
-      >
-        <Typography variant="h4" sx={{ color: "white", fontWeight: 500, px: 4, textAlign: "center" }}>
-          Capturing Moments, Creating Memories
-        </Typography>
-      </Box>
+      />
 
       {/* Right Side - Form */}
       <Box
@@ -65,7 +66,7 @@ const AuthForm = ({
           justifyContent: "center",
           alignItems: "center",
           px: 3,
-          backgroundColor: "#221b2d",
+          backgroundColor: "#221b2d"
         }}
       >
         <Paper
@@ -75,7 +76,7 @@ const AuthForm = ({
             maxWidth: 400,
             width: "100%",
             backgroundColor: "transparent",
-            color: "white",
+            color: "white"
           }}
         >
           <Typography component="h1" variant="h5" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -107,8 +108,8 @@ const AuthForm = ({
                   "& .MuiOutlinedInput-root": {
                     color: "white",
                     "& fieldset": { borderColor: "#555" },
-                    "&:hover fieldset": { borderColor: "#888" },
-                  },
+                    "&:hover fieldset": { borderColor: "#888" }
+                  }
                 }}
               />
             ))}
@@ -128,12 +129,11 @@ const AuthForm = ({
                 "& .MuiOutlinedInput-root": {
                   color: "white",
                   "& fieldset": { borderColor: "#555" },
-                  "&:hover fieldset": { borderColor: "#888" },
-                },
+                  "&:hover fieldset": { borderColor: "#888" }
+                }
               }}
             />
 
-            
             <TextField
               margin="normal"
               required
@@ -149,8 +149,8 @@ const AuthForm = ({
                 "& .MuiOutlinedInput-root": {
                   color: "white",
                   "& fieldset": { borderColor: "#555" },
-                  "&:hover fieldset": { borderColor: "#888" },
-                },
+                  "&:hover fieldset": { borderColor: "#888" }
+                }
               }}
               InputProps={{
                 endAdornment: (
@@ -164,7 +164,7 @@ const AuthForm = ({
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                ),
+                )
               }}
             />
 
@@ -184,8 +184,8 @@ const AuthForm = ({
               sx={{
                 mt: 3,
                 mb: 2,
-                bgcolor: "#9c6cff",
-                "&:hover": { bgcolor: "#8356d4" },
+                bgcolor: "#536dfe",
+                "&:hover": { bgcolor: "#3d5afe" }
               }}
               disabled={isLoading}
             >
@@ -216,7 +216,7 @@ const AuthForm = ({
 
             <Typography variant="body2" align="center">
               {footerText}{" "}
-              <Link href={footerLinkPath} sx={{ color: "#9c6cff" }}>
+              <Link href={footerLinkPath} sx={{ color: "#536dfe" }}>
                 {footerLinkText}
               </Link>
             </Typography>

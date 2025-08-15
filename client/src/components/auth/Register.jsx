@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
 
+
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -78,7 +79,7 @@ const Register = () => {
           alignItems: "center",
         }}
       >
-        <ClipLoader color="#9c6cff" size={60} />
+        <ClipLoader color="#536dfe" size={60} />
       </Box>
     );
   }
@@ -101,11 +102,12 @@ const Register = () => {
       checkboxText={
         <>
           I agree to the{" "}
-          <Link href="#" sx={{ color: "#9c6cff" }}>
+          <Link href="#" sx={{ color: "#536dfe" }}>
             Terms & Conditions
           </Link>
         </>
       }
+      imageUrl= "/Images/register.jpg"  // Use the imported image
     />
   );
 };
