@@ -1,6 +1,8 @@
+// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.header('Authorization');
 
   // Expecting header format: "Bearer <token>"
@@ -12,7 +14,13 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+
+    // Store only ID in req.user for light usage
+    req.user = { id: decoded.id };
+
+    // If you want the full user object in every request:
+    // req.user = await User.findById(decoded.id).select('-password');
+
     next();
   } catch (error) {
     res.status(401).json({ message: 'Token is not valid' });
