@@ -11,7 +11,8 @@ import {
   Typography,
   Paper,
   Chip,
-  IconButton
+  IconButton,
+  Pagination
 } from "@mui/material";
 import { Delete, Edit, CheckCircle, Search } from "@mui/icons-material";
 import Switch from '@mui/material/Switch';
@@ -30,6 +31,8 @@ const TodoApp = () => {
   const [editTodoId, setEditTodoId] = useState(null);
   const [searchTerm, setSearchTerm] = useState(""); // ✅ new state
   const [showCompleted, setShowCompleted] = useState(false);
+  const [page, setPage] = useState(1);
+  const todosPerPage = 5;
 
   // Highlight helper
   const highlightMatch = (text, highlight) => {
@@ -261,138 +264,166 @@ const TodoApp = () => {
     },
   ];
 
-  return (
-    <Box sx={{ p: 4, maxWidth: 1100, margin: "0 auto" }}>
-      {/* User Info */}
-      {user && (
-        <Paper
-          sx={{
-            p: 2,
-            mb: 3,
-            background: "linear-gradient(90deg, #1e3c72 0%, #2a5298 100%)",
-            borderRadius: 3,
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            color: "white",
-          }}
-          elevation={3}
-        >
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Welcome, {user.name}
-            </Typography>
-            <Typography variant="body2">{user.email}</Typography>
-          </Box>
-        </Paper>
-      )}
+    //  Pagination logic
+    const totalPages = Math.ceil(filteredRows.length / todosPerPage);
+    const paginatedRows = filteredRows.slice(
+      (page - 1) * todosPerPage,
+      page * todosPerPage
+    );
 
-      {/* Cards */}
-      <Box
+ return (
+  <Box sx={{ p: 4, maxWidth: 1100, margin: "0 auto" }}>
+    {/* User Info */}
+    {user && (
+      <Paper
         sx={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(min(250px, 100%), 1fr))",
-          gap: 2,
+          p: 2,
           mb: 3,
+          background: "linear-gradient(90deg, #1e3c72 0%, #2a5298 100%)",
+          borderRadius: 3,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          color: "white",
+        }}
+        elevation={3}
+      >
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            Welcome, {user.name}
+          </Typography>
+          <Typography variant="body2">{user.email}</Typography>
+        </Box>
+      </Paper>
+    )}
+
+    {/* Cards */}
+    <Box
+      sx={{
+        width: "100%",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(min(250px, 100%), 1fr))",
+        gap: 2,
+        mb: 3,
+      }}
+    >
+      {cards.map((card, index) => (
+        <CustomCard
+          key={card.id}
+          title={card.title}
+          count={Number(card.count)}
+          gradient={
+            index === 0
+              ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+              : index === 1
+              ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
+              : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
+          }
+          onClick={() => setSelectedCard(index)}
+          isActive={selectedCard === index}
+          activeStyles={{ boxShadow: "0 0 15px rgba(255,255,255,0.6)" }}
+        />
+      ))}
+    </Box>
+
+    {/* Add Task Button */}
+    <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
+      <CustomButton
+        variant="contained"
+        onClick={() => {
+          resetForm();
+          setOpen(true);
         }}
       >
-        {cards.map((card, index) => (
-          <CustomCard
-            key={card.id}
-            title={card.title}
-            count={Number(card.count)}
-            gradient={
-              index === 0
-                ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                : index === 1
-                  ? "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)"
-                  : "linear-gradient(135deg, #43cea2 0%, #185a9d 100%)"
-            }
-            onClick={() => setSelectedCard(index)}
-            isActive={selectedCard === index}
-            activeStyles={{ boxShadow: "0 0 15px rgba(255,255,255,0.6)" }}
-          />
-        ))}
-      </Box>
-
-      {/* Add Task Button */}
-      <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-        <CustomButton variant="contained" onClick={() => { resetForm(); setOpen(true); }}>
-          Add Task
-        </CustomButton>
-      </Box>
-
-      {/* Search Bar */}
-      <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
-        <InputField
-          placeholder="Search tasks..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          icon={<Search />}
-        />
-      </Box>
-
-
-     {/* Show Completed Todos Switch */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-        <Typography variant="body1" sx={{ fontWeight: "bold", mr: 1 }}>
-          Show Completed Todo's
-        </Typography>
-        <Switch
-          checked={showCompleted}
-          onChange={(e) => setShowCompleted(e.target.checked)}
-        />
-      </Box>
-
-
-
-      {/* Add Todo Modal */}
-      <CustomModal
-        open={open}
-        handleClose={() => {
-          resetForm();
-          setOpen(false);
-        }}
-        title="Add New Todo"
-        todoTitle={todoTitle}
-        todoDescription={todoDescription}
-        todoDate={todoDate}
-        setTodoDate={setTodoDate}
-        todoTime={todoTime}
-        setTodoTime={setTodoTime}
-        priority={priority}
-        setPriority={setPriority}
-        setTodoTitle={setTodoTitle}
-        setTodoDescription={setTodoDescription}
-        onSubmit={handleSubmit}
-      />
-
-      {/* Edit Todo Modal */}
-      <CustomModal
-        open={editOpen}
-        handleClose={() => {
-          resetForm();
-          setEditOpen(false);
-        }}
-        title="Edit Todo"
-        todoTitle={todoTitle}
-        todoDescription={todoDescription}
-        todoDate={todoDate}
-        setTodoDate={setTodoDate}
-        todoTime={todoTime}
-        setTodoTime={setTodoTime}
-        priority={priority}
-        setPriority={setPriority}
-        setTodoTitle={setTodoTitle}
-        setTodoDescription={setTodoDescription}
-        onSubmit={handleEditSubmit}
-      />
-
-      {/* Todo Table */}
-      <CustomTable columns={columns} rows={filteredRows} minWidth={900} />
+        Add Task
+      </CustomButton>
     </Box>
-  );
+
+    {/* Search Bar */}
+    <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+      <InputField
+        placeholder="Search tasks..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        icon={<Search />}
+      />
+    </Box>
+
+    {/* Show Completed Todos Switch */}
+    <Box
+      sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}
+    >
+      <Typography variant="body1" sx={{ fontWeight: "bold", mr: 1 }}>
+        Show Completed Todo's
+      </Typography>
+      <Switch
+        checked={showCompleted}
+        onChange={(e) => {
+          setShowCompleted(e.target.checked);
+          setPage(1); // reset to first page when filter changes
+        }}
+      />
+    </Box>
+
+    {/* Todo Table with Pagination */}
+    <CustomTable columns={columns} rows={paginatedRows} minWidth={900} />
+
+    {/* Pagination Controls */}
+    {totalPages > 1 && (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(e, value) => setPage(value)}
+          color="primary"
+        />
+      </Box>
+    )}
+
+    {/* Add Todo Modal */}
+    <CustomModal
+      open={open}
+      handleClose={() => {
+        resetForm();
+        setOpen(false);
+      }}
+      title="Add New Todo"
+      todoTitle={todoTitle}
+      todoDescription={todoDescription}
+      todoDate={todoDate}
+      setTodoDate={setTodoDate}
+      todoTime={todoTime}
+      setTodoTime={setTodoTime}
+      priority={priority}
+      setPriority={setPriority}
+      setTodoTitle={setTodoTitle}
+      setTodoDescription={setTodoDescription}
+      onSubmit={handleSubmit}
+    />
+
+    {/* Edit Todo Modal */}
+    <CustomModal
+      open={editOpen}
+      handleClose={() => {
+        resetForm();
+        setEditOpen(false);
+      }}
+      title="Edit Todo"
+      todoTitle={todoTitle}
+      todoDescription={todoDescription}
+      todoDate={todoDate}
+      setTodoDate={setTodoDate}
+      todoTime={todoTime}
+      setTodoTime={setTodoTime}
+      priority={priority}
+      setPriority={setPriority}
+      setTodoTitle={setTodoTitle}
+      setTodoDescription={setTodoDescription}
+      onSubmit={handleEditSubmit}
+    />
+  </Box>
+);
+
 };
 
 export default TodoApp;
