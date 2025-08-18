@@ -14,9 +14,11 @@ const todoSchema = new mongoose.Schema(
     },
     date: {
       type: String, // "YYYY-MM-DD"
+     default: () => new Date().toISOString().split("T")[0], // Default to today's date
     },
     time: {
       type: String, // "HH:mm"
+     default: () => new Date().toTimeString().split(" ")[0].substring(0, 5), // Default to current time in HH:mm format
     },
     priority: {
       type: String,

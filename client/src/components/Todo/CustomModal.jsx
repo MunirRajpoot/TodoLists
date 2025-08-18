@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -33,6 +33,14 @@ const CustomModal = ({
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+    // Set default date as today when modal opens
+    useEffect(() => {
+        if (open && !todoDate) {
+            const today = new Date().toISOString().split("T")[0]; // format: YYYY-MM-DD
+            setTodoDate(today);
+        }
+    }, [open, todoDate, setTodoDate]);
+
     const style = {
         position: "absolute",
         top: "50%",
@@ -49,7 +57,13 @@ const CustomModal = ({
     };
 
     return (
-        <Modal open={open} onClose={handleClose} closeAfterTransition slots={{ backdrop: Backdrop }} slotProps={{ backdrop: { timeout: 500 } }}>
+        <Modal
+            open={open}
+            onClose={handleClose}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{ backdrop: { timeout: 500 } }}
+        >
             <Fade in={open}>
                 <Box sx={style}>
                     {/* Header */}
@@ -67,11 +81,48 @@ const CustomModal = ({
                     )}
 
                     {/* Todo Form */}
-                    <InputField label="Enter Title" fullWidth value={todoTitle} onChange={(e) => setTodoTitle(e.target.value)} sx={{ mb: 2 }} />
-                    <InputField label="Enter Description" fullWidth multiline rows={isMobile ? 2 : 2} value={todoDescription} onChange={(e) => setTodoDescription(e.target.value)} sx={{ mb: 2 }} />
-                    <InputField label="Date" fullWidth type="date" value={todoDate} onChange={(e) => setTodoDate(e.target.value)} sx={{ mb: 2 }} InputLabelProps={{ shrink: true }} />
-                    <InputField label="Time" fullWidth type="time" value={todoTime} onChange={(e) => setTodoTime(e.target.value)} sx={{ mb: 2 }} InputLabelProps={{ shrink: true }} />
-                    <InputField label="Priority" fullWidth select value={priority} onChange={(e) => setPriority(e.target.value)} sx={{ mb: 2 }}>
+                    <InputField
+                        label="Enter Title"
+                        fullWidth
+                        value={todoTitle}
+                        onChange={(e) => setTodoTitle(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <InputField
+                        label="Enter Description (optional)"
+                        fullWidth
+                        multiline
+                        rows={isMobile ? 2 : 2}
+                        value={todoDescription}
+                        onChange={(e) => setTodoDescription(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <InputField
+                        label="Date (optional)"
+                        fullWidth
+                        type="date"
+                        value={todoDate}
+                        onChange={(e) => setTodoDate(e.target.value)}
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{ shrink: true }}
+                    />
+                    <InputField
+                        label="Time (optional)"
+                        fullWidth
+                        type="time"
+                        value={todoTime}
+                        onChange={(e) => setTodoTime(e.target.value)}
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{ shrink: true }}
+                    />
+                    <InputField
+                        label="Priority"
+                        fullWidth
+                        select
+                        value={priority}
+                        onChange={(e) => setPriority(e.target.value)}
+                        sx={{ mb: 2 }}
+                    >
                         <MenuItem value="Low">Low</MenuItem>
                         <MenuItem value="Medium">Medium</MenuItem>
                         <MenuItem value="High">High</MenuItem>
@@ -81,7 +132,7 @@ const CustomModal = ({
                         <CustomButton
                             variant="contained"
                             onClick={onSubmit}
-                            disabled={!todoTitle?.trim() || !todoDescription?.trim() || !todoDate || !todoTime || !priority}
+                            disabled={!todoTitle?.trim()} // only title is required
                         >
                             Save
                         </CustomButton>
