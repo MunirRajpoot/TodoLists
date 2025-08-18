@@ -7,7 +7,7 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        backgroundColor: "#254887",   // ✅ fixed custom color
+        backgroundColor: "#254887",   // fixed custom color
         color: "white",               // keep text white for contrast
         py: 6,
         mt: "auto",

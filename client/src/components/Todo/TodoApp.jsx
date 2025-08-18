@@ -24,13 +24,13 @@ const TodoApp = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [todoTitle, setTodoTitle] = useState("");
   const [todoDescription, setTodoDescription] = useState("");
-  const [todoDate, setTodoDate] = useState(new Date().toISOString().split("T")[0]); // default to today
+  const [todoDate, setTodoDate] = useState(new Date().toISOString().split("T")[0]); 
   const [todoTime, setTodoTime] = useState("");
   const [priority, setPriority] = useState("Low");
   const [todos, setTodos] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [editTodoId, setEditTodoId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // ✅ new state
+  const [searchTerm, setSearchTerm] = useState(""); 
   const [showCompleted, setShowCompleted] = useState(false);
   const [page, setPage] = useState(1);
   const todosPerPage = 5;
@@ -155,8 +155,7 @@ const TodoApp = () => {
   };
 
   // Start editing
-  const startEditing = (id) => {
-    debugger
+  const startEditing = (id) => {  
     const todo = todos.find((t) => t._id === id);
     if (todo) {
       setTodoTitle(todo.title);
@@ -170,10 +169,9 @@ const TodoApp = () => {
   };
 
   const resetForm = () => {
-    debugger
     setTodoTitle("");
     setTodoDescription("");
-    setTodoDate("");
+    setTodoDate(new Date().toISOString().split("T")[0]);
     setTodoTime("");
     setPriority("Low");
   };
@@ -348,7 +346,6 @@ const TodoApp = () => {
         <CustomButton
           variant="contained"
           onClick={() => {
-            // resetForm();
             setOpen(true);
           }}
         >

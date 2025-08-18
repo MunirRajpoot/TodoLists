@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
             'Password must meet complexity requirements'
         ]
     },
-    profilePic: { type: String, default: "" } // ✅ new field for storing image URL or base64
+    profilePic: { type: String, default: "" } // new field for storing image URL or base64
 });
 
 const User = mongoose.model('User', userSchema);

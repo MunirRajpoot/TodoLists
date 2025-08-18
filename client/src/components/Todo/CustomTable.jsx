@@ -19,7 +19,7 @@ export default function CustomTable({ columns = [], rows = [], tableStyles = {} 
                                 key={col.field}
                                 align={col.align || "left"}
                                 sx={{
-                                    color: "white", // ✅ White text
+                                    color: "white", // White text
                                     fontWeight: "bold",
                                     ...tableStyles.headerCell
                                 }}
@@ -46,7 +46,7 @@ export default function CustomTable({ columns = [], rows = [], tableStyles = {} 
                                     align={col.align || "left"}
                                     sx={tableStyles.cell}
                                 >
-                                    {/* ✅ Support custom rendering */}
+                                    {/* Support custom rendering */}
                                     {col.renderCell
                                         ? col.renderCell({ row, value: row[col.field] })
                                         : row[col.field]}
