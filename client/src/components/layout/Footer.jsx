@@ -7,16 +7,10 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        backgroundColor: (theme) =>
-          theme.palette.mode === 'light'
-            ? theme.palette.primary.main
-            : theme.palette.background.paper,
-        color: (theme) =>
-          theme.palette.mode === 'light'
-            ? theme.palette.common.white
-            : theme.palette.text.primary,
+        backgroundColor: "#254887",   // ✅ fixed custom color
+        color: "white",               // keep text white for contrast
         py: 6,
-        mt: 'auto',
+        mt: "auto",
       }}
     >
       <Container maxWidth="lg">

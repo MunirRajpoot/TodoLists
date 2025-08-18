@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Increase payload size limit (e.g. 10MB)
+//  Increase payload size limit (e.g. 10MB)
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
