@@ -108,7 +108,7 @@ function Navbar() {
                             <>
                                 <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
                                     <Avatar 
-                                        src={user.profilePic || localStorage.getItem("profilePic") || ""}
+                                       src={user?.profilePic || ""}
                                         sx={{ bgcolor: "#2979ff" }}
                                     >
                                         {user.name?.[0]?.toUpperCase()}

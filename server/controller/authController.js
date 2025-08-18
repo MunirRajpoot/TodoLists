@@ -52,9 +52,15 @@ exports.signup = async (req, res) => {
     });
 
     res.status(201).json({
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
-    });
+    token,
+    user: { 
+      id: user._id, 
+      name: user.name, 
+      email: user.email, 
+      profilePic: user.profilePic || "" 
+    },
+  });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -87,13 +93,18 @@ exports.login = async (req, res) => {
     });
 
     res.status(200).json({
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
+    token,
+    user: { 
+      id: user._id, 
+      name: user.name, 
+      email: user.email, 
+      profilePic: user.profilePic || "" 
+    },
     });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  };
 
 exports.updateProfile = async (req, res) => {
   try {

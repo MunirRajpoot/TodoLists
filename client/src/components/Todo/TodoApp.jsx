@@ -3,7 +3,7 @@ import CustomCard from "./CustomCard.jsx";
 import CustomTable from "./CustomTable.jsx";
 import CustomModal from "./CustomModal.jsx";
 import CustomButton from "./CustomButton.jsx";
-import InputField from "./InputField.jsx"; // ✅ your reusable input
+import InputField from "./InputField.jsx"; 
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -24,7 +24,7 @@ const TodoApp = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [todoTitle, setTodoTitle] = useState("");
   const [todoDescription, setTodoDescription] = useState("");
-  const [todoDate, setTodoDate] = useState("");
+  const [todoDate, setTodoDate] = useState(new Date().toISOString().split("T")[0]); // default to today
   const [todoTime, setTodoTime] = useState("");
   const [priority, setPriority] = useState("Low");
   const [todos, setTodos] = useState([]);
@@ -156,6 +156,7 @@ const TodoApp = () => {
 
   // Start editing
   const startEditing = (id) => {
+    debugger
     const todo = todos.find((t) => t._id === id);
     if (todo) {
       setTodoTitle(todo.title);
@@ -169,6 +170,7 @@ const TodoApp = () => {
   };
 
   const resetForm = () => {
+    debugger
     setTodoTitle("");
     setTodoDescription("");
     setTodoDate("");
@@ -346,7 +348,7 @@ const TodoApp = () => {
         <CustomButton
           variant="contained"
           onClick={() => {
-            resetForm();
+            // resetForm();
             setOpen(true);
           }}
         >
@@ -359,7 +361,9 @@ const TodoApp = () => {
         <InputField
           placeholder="Search tasks..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+           setPage(1); // reset to first page when search term changes
+            setSearchTerm(e.target.value)}}
           icon={<Search />}
         />
       </Box>
@@ -396,7 +400,7 @@ const TodoApp = () => {
       )}
 
       {/* Add Todo Modal */}
-      <CustomModal
+     {open &&  <CustomModal
         open={open}
         handleClose={() => {
           resetForm();
@@ -414,10 +418,10 @@ const TodoApp = () => {
         setTodoTitle={setTodoTitle}
         setTodoDescription={setTodoDescription}
         onSubmit={handleSubmit}
-      />
+      />}
 
       {/* Edit Todo Modal */}
-      <CustomModal
+      {editOpen && <CustomModal
         open={editOpen}
         handleClose={() => {
           resetForm();
@@ -435,7 +439,7 @@ const TodoApp = () => {
         setTodoTitle={setTodoTitle}
         setTodoDescription={setTodoDescription}
         onSubmit={handleEditSubmit}
-      />
+      />}
     </Box>
   );
 

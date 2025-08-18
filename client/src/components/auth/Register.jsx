@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
-import { Box, Link } from "@mui/material";
+import { Link } from "@mui/material";
 import axios from "axios";
 import { toast } from "react-toastify";
-import ClipLoader from "react-spinners/ClipLoader";
-
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -21,7 +19,6 @@ const Register = () => {
     setError("");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     if (!emailRegex.test(email)) {
-      setIsLoading(false);
       const msg = "Please enter a valid email address.";
       setError(msg);
       toast.error(msg);
@@ -31,7 +28,6 @@ const Register = () => {
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*\s).{8,}$/;
     if (!passwordRegex.test(password)) {
-      setIsLoading(false);
       const msg =
         "Password must be at least 8 characters long, include uppercase, lowercase, number, special character, and must not contain spaces.";
       setError(msg);
@@ -47,8 +43,8 @@ const Register = () => {
       });
 
       toast.success("Account created successfully!");
-      // Navigate to login with spinner trigger
-      navigate("/login", { state: { fromSignup: true } });
+              navigate("/login");
+
     } catch (err) {
       const msg = err.response?.data?.message || "Registration failed";
       setError(msg);
@@ -68,21 +64,6 @@ const Register = () => {
       required: true,
     },
   ];
-
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ClipLoader color="#536dfe" size={60} />
-      </Box>
-    );
-  }
 
   return (
     <AuthForm
@@ -107,7 +88,7 @@ const Register = () => {
           </Link>
         </>
       }
-      imageUrl= "/Images/register.jpg"  // Use the imported image
+      imageUrl= "/Images/register.jpg" 
     />
   );
 };

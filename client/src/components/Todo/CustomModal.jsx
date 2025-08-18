@@ -30,16 +30,17 @@ const CustomModal = ({
     onSubmit,
     width = 500,
 }) => {
+    debugger
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     // Set default date as today when modal opens
-    useEffect(() => {
-        if (open && !todoDate) {
-            const today = new Date().toISOString().split("T")[0]; // format: YYYY-MM-DD
-            setTodoDate(today);
-        }
-    }, [open, todoDate, setTodoDate]);
+    // useEffect(() => {
+    //     if (open && !todoDate) {
+    //         const today = new Date().toISOString().split("T")[0]; // format: YYYY-MM-DD
+    //         setTodoDate(today);
+    //     }
+    // }, [open, todoDate, setTodoDate]);
 
     const style = {
         position: "absolute",
