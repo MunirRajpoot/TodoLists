@@ -35,14 +35,18 @@ const ProfileModal = ({
         }
     }, [open, userName, userEmail]);
 
-    const handleProfilePicChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setProfilePic(imageUrl);
-            localStorage.setItem("profilePic", imageUrl);
-        }
+   const handleProfilePicChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+        setProfilePic(reader.result); // base64 string
+        localStorage.setItem("profilePic", reader.result);
+        };
+        reader.readAsDataURL(file);
+    }
     };
+
 
     const style = {
         position: "absolute",

@@ -107,10 +107,13 @@ function Navbar() {
                         {user && (
                             <>
                                 <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
-                                    <Avatar sx={{ bgcolor: "#2979ff" }}>
+                                    <Avatar 
+                                        src={user.profilePic || localStorage.getItem("profilePic") || ""}
+                                        sx={{ bgcolor: "#2979ff" }}
+                                    >
                                         {user.name?.[0]?.toUpperCase()}
                                     </Avatar>
-                                </IconButton>
+                                    </IconButton>
 
                                 <Menu
                                     anchorEl={anchorEl}
