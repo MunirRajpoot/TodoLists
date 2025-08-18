@@ -174,6 +174,7 @@ function Navbar() {
                 handleClose={() => setOpenProfileModal(false)}
                 userName={user?.name}
                 userEmail={user?.email}
+                 userProfilePic={user?.profilePic}
                 onUpdateProfile={handleUpdateProfile}
             />
         </>

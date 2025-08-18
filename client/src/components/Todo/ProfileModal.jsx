@@ -17,23 +17,26 @@ const ProfileModal = ({
     handleClose,
     userName,
     userEmail,
+    userProfilePic,
     onUpdateProfile, // callback for updating profile
     width = 500,
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic") || null);
+    const [profilePic, setProfilePic] = useState(userProfilePic || localStorage.getItem("profilePic") || null);
     const [name, setName] = useState(userName || "");
     const [email, setEmail] = useState(userEmail || "");
 
     // Sync props with state when modal opens
-    useEffect(() => {
+        useEffect(() => {
         if (open) {
             setName(userName || "");
             setEmail(userEmail || "");
+            setProfilePic(userProfilePic || localStorage.getItem("profilePic") || null);
         }
-    }, [open, userName, userEmail]);
+        }, [open, userName, userEmail, userProfilePic]);
+
 
    const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
