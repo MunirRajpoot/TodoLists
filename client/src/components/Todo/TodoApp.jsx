@@ -14,6 +14,7 @@ import {
   IconButton
 } from "@mui/material";
 import { Delete, Edit, CheckCircle, Search } from "@mui/icons-material";
+import Switch from '@mui/material/Switch';
 
 const TodoApp = () => {
   const [user, setUser] = useState(null);
@@ -28,6 +29,7 @@ const TodoApp = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [editTodoId, setEditTodoId] = useState(null);
   const [searchTerm, setSearchTerm] = useState(""); // ✅ new state
+  const [showCompleted, setShowCompleted] = useState(false);
 
   // Highlight helper
   const highlightMatch = (text, highlight) => {
@@ -58,6 +60,10 @@ const TodoApp = () => {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   };
+
+  //switch for completed tasks
+  const label = { inputProps: { 'aria-label': 'Switch demo' } };
+
 
   // Fetch todos
   useEffect(() => {
@@ -190,10 +196,22 @@ const TodoApp = () => {
     status: todo.completed ? "Completed" : "Pending",
   }));
 
-  // ✅ Filter rows based on search term
-  const filteredRows = rows.filter((row) =>
-    row.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+ //  Filter rows based on search term + switch
+    const filteredRows = rows.filter((row) => {
+    const matchesSearch = row.title.toLowerCase().includes(searchTerm.toLowerCase());
+
+    let matchesCompletion;
+    if (showCompleted) {
+      // Show only completed
+      matchesCompletion = row.status === "Completed";
+    } else {
+      // Show only pending
+      matchesCompletion = row.status !== "Completed";
+    }
+
+    return matchesSearch && matchesCompletion;
+  });
+
 
   // Columns for table
   const columns = [
@@ -314,6 +332,20 @@ const TodoApp = () => {
           icon={<Search />}
         />
       </Box>
+
+
+     {/* Show Completed Todos Switch */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+        <Typography variant="body1" sx={{ fontWeight: "bold", mr: 1 }}>
+          Show Completed Todo's
+        </Typography>
+        <Switch
+          checked={showCompleted}
+          onChange={(e) => setShowCompleted(e.target.checked)}
+        />
+      </Box>
+
+
 
       {/* Add Todo Modal */}
       <CustomModal
