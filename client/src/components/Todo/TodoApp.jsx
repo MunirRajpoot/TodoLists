@@ -3,7 +3,7 @@ import CustomCard from "./CustomCard.jsx";
 import CustomTable from "./CustomTable.jsx";
 import CustomModal from "./CustomModal.jsx";
 import CustomButton from "./CustomButton.jsx";
-import InputField from "./InputField.jsx"; 
+import InputField from "./InputField.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -17,20 +17,20 @@ import {
 } from "@mui/material";
 import { Delete, Edit, CheckCircle, Search } from "@mui/icons-material";
 import Switch from '@mui/material/Switch';
-
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const TodoApp = () => {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [todoTitle, setTodoTitle] = useState("");
   const [todoDescription, setTodoDescription] = useState("");
-  const [todoDate, setTodoDate] = useState(new Date().toISOString().split("T")[0]); 
+  const [todoDate, setTodoDate] = useState(new Date().toISOString().split("T")[0]);
   const [todoTime, setTodoTime] = useState("");
   const [priority, setPriority] = useState("Low");
   const [todos, setTodos] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [editTodoId, setEditTodoId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
   const [page, setPage] = useState(1);
   const todosPerPage = 5;
@@ -69,7 +69,7 @@ const TodoApp = () => {
   useEffect(() => {
     if (user) {
       axios
-        .get("http://localhost:5000/api/todos", axiosConfig)
+        .get(`${API}/api/todos`, axiosConfig)
         .then((res) => setTodos(res.data))
         .catch((err) => console.error(err));
     }
@@ -86,7 +86,7 @@ const TodoApp = () => {
   const handleSubmit = () => {
     axios
       .post(
-        "http://localhost:5000/api/todos",
+        `${API}/api/todos`,
         {
           title: todoTitle,
           description: todoDescription,
@@ -110,7 +110,7 @@ const TodoApp = () => {
   const handleEditSubmit = () => {
     axios
       .put(
-        `http://localhost:5000/api/todos/${editTodoId}`,
+        `${API}/api/todos/${editTodoId}`,
         {
           title: todoTitle,
           description: todoDescription,
@@ -133,7 +133,7 @@ const TodoApp = () => {
   // Delete Todo
   const deleteTodo = (id) => {
     axios
-      .delete(`http://localhost:5000/api/todos/${id}`, axiosConfig)
+      .delete(`${API}/api/todos/${id}`, axiosConfig)
       .then(() => {
         setTodos(todos.filter((todo) => todo._id !== id));
         toast.info("Todo deleted successfully!");
@@ -144,7 +144,7 @@ const TodoApp = () => {
   // Toggle complete
   const toggleComplete = (id) => {
     axios
-      .patch(`http://localhost:5000/api/todos/${id}/toggle`, {}, axiosConfig)
+      .patch(`${API}/api/todos/${id}/toggle`, {}, axiosConfig)
       .then((res) => {
         setTodos(todos.map((todo) => (todo._id === id ? res.data : todo)));
         toast.success(
@@ -155,7 +155,7 @@ const TodoApp = () => {
   };
 
   // Start editing
-  const startEditing = (id) => {  
+  const startEditing = (id) => {
     const todo = todos.find((t) => t._id === id);
     if (todo) {
       setTodoTitle(todo.title);
@@ -359,8 +359,9 @@ const TodoApp = () => {
           placeholder="Search tasks..."
           value={searchTerm}
           onChange={(e) => {
-           setPage(1); // reset to first page when search term changes
-            setSearchTerm(e.target.value)}}
+            setPage(1); // reset to first page when search term changes
+            setSearchTerm(e.target.value)
+          }}
           icon={<Search />}
         />
       </Box>
@@ -397,7 +398,7 @@ const TodoApp = () => {
       )}
 
       {/* Add Todo Modal */}
-     {open &&  <CustomModal
+      {open && <CustomModal
         open={open}
         handleClose={() => {
           resetForm();

@@ -4,7 +4,7 @@ import AuthForm from "./AuthForm";
 import { Link } from "@mui/material";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -36,7 +36,7 @@ const Register = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post(`${API}/api/auth/register`, {
         name,
         email,
         password,

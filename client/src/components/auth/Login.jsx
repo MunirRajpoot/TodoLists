@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AuthForm from "./AuthForm";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,10 +17,13 @@ const Login = () => {
     setError("");
 
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+      const { data } = await axios.post(
+        `${API}/api/auth/login`,
+        {
+          email,
+          password,
+        }
+      );
 
       if (data.token) {
         localStorage.setItem("token", data.token);
@@ -55,7 +58,7 @@ const Login = () => {
       isLoading={isLoading}
       error={error}
       checkboxText="Remember me"
-      imageUrl= "/Images/login.jpg"
+      imageUrl="/Images/login.jpg"
     />
   );
 };
