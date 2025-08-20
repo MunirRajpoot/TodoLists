@@ -1,17 +1,56 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './pages/Login.jsx';
-import SignupPage from './pages/Signup.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import { ToastContainer } from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import LoginPage from "./pages/Login.jsx";
+import SignupPage from "./pages/Signup.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CssBaseline } from "@mui/material";
-import Footer from './components/layout/Footer.jsx';
+import Footer from "./components/layout/Footer.jsx";
+import axios from "axios";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-// Simple private route check
+// Private Route Component
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" />;
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // null = still checking
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+
+      try {
+        const res = await axios.get(`${API}/api/auth/validate`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.data.valid) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          localStorage.removeItem("token");
+          toast.error("Session expired. Please log in again.");
+        }
+      } catch (error) {
+        console.log("error", error);
+        setIsAuthenticated(false);
+        localStorage.removeItem("token");
+        toast.error("Invalid token. Please log in again.");
+      }
+    };
+
+    checkToken();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>; // while checking token
+  }
+
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 function App() {

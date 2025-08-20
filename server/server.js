@@ -31,7 +31,7 @@ app.use('/api/todos', require('./routes/todoRoutes')); // Todo routes
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, (err) => {
     if (err) {
-        console.error('❌ Server failed to start:', err);
+        console.error('Server failed to start:', err);
     } else {
         console.log(` Server is running on http://localhost:${PORT}`);
     }
