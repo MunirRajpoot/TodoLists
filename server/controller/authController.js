@@ -47,13 +47,13 @@ exports.signup = async (req, res) => {
     const user = await User.create({ name, email, password: hashedPassword });
 
     res.status(201).json({
-    user: { 
-      id: user._id, 
-      name: user.name, 
-      email: user.email, 
-      profilePic: user.profilePic || "" 
-    },
-  });
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePic: user.profilePic || ""
+      },
+    });
 
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -87,18 +87,18 @@ exports.login = async (req, res) => {
     });
 
     res.status(200).json({
-    token,
-    user: { 
-      id: user._id, 
-      name: user.name, 
-      email: user.email, 
-      profilePic: user.profilePic || "" 
-    },
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePic: user.profilePic || ""
+      },
     });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  };
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 exports.updateProfile = async (req, res) => {
   try {
@@ -122,14 +122,15 @@ exports.updateProfile = async (req, res) => {
 // VALIDATE TOKEN
 exports.validateToken = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "No token" });
+  if (!token) return res.status(401).json({ valid: false, message: "No token" });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.status(200).json({ user });
+    if (!user) return res.status(404).json({ valid: false, message: "User not found" });
+
+    res.status(200).json({ valid: true, user });
   } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ valid: false, message: "Invalid or expired token" });
   }
 };
